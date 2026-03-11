@@ -173,6 +173,92 @@ struct CharacterView: View {
         .fullScreenCover(isPresented: $showManageHabits) {
             HabitListView()
         }
+        .safeAreaInset(edge: .bottom) {
+            DebugDatePanel(manager: manager)
+        }
+    }
+}
+
+// MARK: - DEBUG: Date Control Panel (remove before release)
+
+struct DebugDatePanel: View {
+    let manager: HabitManager
+    private var debug: DebugDate { DebugDate.shared }
+
+    var body: some View {
+        let dateFormatter: DateFormatter = {
+            let f = DateFormatter()
+            f.dateFormat = "EEE, MMM d"
+            return f
+        }()
+
+        HStack(spacing: 14) {
+            Button {
+                debug.back()
+                manager.performDayReset()
+                manager.refresh()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(AppTheme.textBright)
+                    .frame(width: 30, height: 30)
+                    .background(Circle().fill(AppTheme.bgCardBorder))
+            }
+            .buttonStyle(.plain)
+
+            VStack(spacing: 1) {
+                Text(dateFormatter.string(from: appNow()))
+                    .font(.system(size: 12, weight: .bold, design: .serif))
+                    .foregroundColor(AppTheme.textBright)
+                if debug.dayOffset != 0 {
+                    Text("(\(debug.dayOffset > 0 ? "+" : "")\(debug.dayOffset)d)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundColor(AppTheme.accentOrange)
+                }
+            }
+
+            Button {
+                debug.forward()
+                manager.performDayReset()
+                manager.refresh()
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(AppTheme.textBright)
+                    .frame(width: 30, height: 30)
+                    .background(Circle().fill(AppTheme.bgCardBorder))
+            }
+            .buttonStyle(.plain)
+
+            if debug.dayOffset != 0 {
+                Button {
+                    debug.reset()
+                    manager.performDayReset()
+                    manager.refresh()
+                } label: {
+                    Text("Reset")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(AppTheme.accentDanger)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(RoundedRectangle(cornerRadius: 6).fill(AppTheme.accentDanger.opacity(0.1)))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(AppTheme.bgCard.opacity(0.95))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(AppTheme.accentOrange.opacity(0.2), lineWidth: 0.5)
+                )
+                .shadow(color: .black.opacity(0.3), radius: 8, y: -2)
+        )
+        .padding(.horizontal, 40)
+        .padding(.bottom, 72)
     }
 }
 

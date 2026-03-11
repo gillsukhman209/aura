@@ -23,6 +23,7 @@ final class HabitManager {
     func refresh() {
         fetchProfile()
         fetchHabits()
+        syncProfileState()
     }
 
     private func fetchProfile() {
@@ -42,30 +43,40 @@ final class HabitManager {
     // MARK: - Today's Habits
 
     var todaysHabits: [Habit] {
-        let today = Date()
+        let today = appNow()
         return habits.filter { $0.isScheduled(on: today) }
     }
 
     var completedTodayCount: Int {
-        let today = Date()
+        let today = appNow()
         return todaysHabits.filter { $0.isCompleted(on: today) }.count
     }
 
     var allTodayCompleted: Bool {
-        let today = Date()
+        let today = appNow()
         let scheduled = todaysHabits
         guard !scheduled.isEmpty else { return false }
         return scheduled.allSatisfy { $0.isCompleted(on: today) }
     }
 
-    // MARK: - Profile Accessors
+    // MARK: - Profile Accessors (stored for @Observable reactivity)
 
-    var level: Int { profile?.level ?? 0 }
-    var totalXP: Int { profile?.totalXP ?? 0 }
-    var currentLevelXP: Int { profile?.currentLevelXP ?? 0 }
-    var xpPerLevel: Int { profile?.xpPerLevel ?? 100 }
-    var currentStreak: Int { profile?.currentStreak ?? 0 }
-    var longestStreak: Int { profile?.longestStreak ?? 0 }
+    private(set) var level: Int = 0
+    private(set) var totalXP: Int = 0
+    private(set) var currentLevelXP: Int = 0
+    private(set) var xpPerLevel: Int = 100
+    private(set) var currentStreak: Int = 0
+    private(set) var longestStreak: Int = 0
+
+    /// Sync stored properties from profile so @Observable detects changes.
+    private func syncProfileState() {
+        level = profile?.level ?? 0
+        totalXP = profile?.totalXP ?? 0
+        currentLevelXP = profile?.currentLevelXP ?? 0
+        xpPerLevel = profile?.xpPerLevel ?? 100
+        currentStreak = profile?.currentStreak ?? 0
+        longestStreak = profile?.longestStreak ?? 0
+    }
 
     func statValue(for stat: StatType) -> Int {
         profile?.statValue(for: stat) ?? 0
@@ -84,7 +95,7 @@ final class HabitManager {
     /// Weekly XP gained per stat (last 7 days).
     var weeklyProgress: [DisplayWeeklyStat] {
         let calendar = Calendar.current
-        let weekAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        let weekAgo = calendar.date(byAdding: .day, value: -7, to: appNow()) ?? appNow()
 
         return StatType.allCases.compactMap { stat in
             let xp = habits
@@ -104,7 +115,7 @@ final class HabitManager {
     /// Consistency score: % of habits completed over rolling 30 days.
     var consistencyScore: Int {
         let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
+        let today = calendar.startOfDay(for: appNow())
         var totalScheduled = 0
         var totalCompleted = 0
 
@@ -207,7 +218,7 @@ final class HabitManager {
     /// Complete a build habit for today.
     func completeBuildHabit(_ habit: Habit) {
         guard habit.type == .build else { return }
-        let today = Date()
+        let today = appNow()
         guard habit.log(for: today) == nil else { return } // already logged
 
         let log = HabitLog(habit: habit, date: today, status: .completed)
@@ -220,7 +231,7 @@ final class HabitManager {
     /// Log a relapse for a quit habit.
     func logRelapse(_ habit: Habit) {
         guard habit.type == .quit else { return }
-        let today = Date()
+        let today = appNow()
 
         if let existing = habit.log(for: today) {
             existing.status = .relapsed
@@ -235,7 +246,7 @@ final class HabitManager {
     /// Log numeric progress. Accumulates across multiple calls per day.
     func logNumericProgress(_ habit: Habit, value: Double) {
         guard habit.type == .numeric else { return }
-        let today = Date()
+        let today = appNow()
 
         if let existing = habit.log(for: today) {
             let newValue = (existing.value ?? 0) + value
@@ -271,7 +282,7 @@ final class HabitManager {
 
     /// Undo a build habit completion for today.
     func undoCompletion(_ habit: Habit) {
-        let today = Date()
+        let today = appNow()
         guard let log = habit.log(for: today) else { return }
 
         if log.status == .completed {
@@ -282,6 +293,7 @@ final class HabitManager {
 
         habit.logs.removeAll { $0.id == log.id }
         modelContext.delete(log)
+        syncProfileState()
         save()
     }
 
@@ -290,6 +302,7 @@ final class HabitManager {
     private func awardXP(for habit: Habit) {
         profile?.addXP(habit.baseXP)
         profile?.addStatXP(habit.statXP, to: habit.stat)
+        syncProfileState()
     }
 
     // MARK: - Day Reset
@@ -299,7 +312,7 @@ final class HabitManager {
         guard let profile else { return }
         let service = DayResetService(modelContext: modelContext)
         service.evaluateIfNeeded(profile: profile, habits: habits)
-        refresh()
+        refresh() // refresh already calls syncProfileState()
     }
 
     // MARK: - Persistence

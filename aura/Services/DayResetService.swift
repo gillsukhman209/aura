@@ -13,7 +13,7 @@ struct DayResetService {
     /// Call on every app foreground. Evaluates all days between `lastCompletedDate` and yesterday.
     func evaluateIfNeeded(profile: UserProfile, habits: [Habit]) {
         let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
+        let today = calendar.startOfDay(for: appNow())
 
         // Determine the first day to evaluate
         let startDate: Date

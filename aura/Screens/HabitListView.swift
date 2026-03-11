@@ -90,6 +90,7 @@ struct HabitListRow: View {
     let onDelete: () -> Void
 
     @State private var showActions = false
+    @State private var showDetail = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -142,6 +143,10 @@ struct HabitListRow: View {
                         .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
                 )
         )
+        .onTapGesture { showDetail = true }
+        .sheet(isPresented: $showDetail) {
+            HabitDetailView(habit: habit)
+        }
         .confirmationDialog("Manage Habit", isPresented: $showActions) {
             Button("Edit") { onEdit() }
             Button("Archive") { onArchive() }

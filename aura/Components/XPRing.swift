@@ -187,5 +187,15 @@ struct XPRing: View {
                 pulse = true
             }
         }
+        .onChange(of: currentXP) { _, _ in
+            withAnimation(.easeOut(duration: 0.5)) {
+                prog = target
+            }
+        }
+        .onChange(of: maxXP) { _, _ in
+            withAnimation(.easeOut(duration: 0.5)) {
+                prog = target
+            }
+        }
     }
 }

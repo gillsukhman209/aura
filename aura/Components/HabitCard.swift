@@ -6,18 +6,19 @@ struct HabitCard: View {
     @State private var showCheck = false
     @State private var showNumericInput = false
     @State private var numericText = ""
+    @State private var showDetail = false
 
     /// Whether this habit has an explicit completed log today.
     /// Quit habits use separate logic (no log = going strong, not "completed").
     private var hasBuildOrNumericCompletion: Bool {
         guard habit.type != .quit else { return false }
-        return habit.isCompleted(on: Date())
+        return habit.isCompleted(on: appNow())
     }
 
     /// Whether a quit habit has relapsed today.
     private var hasRelapsedToday: Bool {
         guard habit.type == .quit else { return false }
-        return habit.log(for: Date())?.status == .relapsed
+        return habit.log(for: appNow())?.status == .relapsed
     }
 
     var body: some View {
@@ -60,7 +61,7 @@ struct HabitCard: View {
 
                 // Numeric progress
                 if habit.type == .numeric, let target = habit.targetValue {
-                    let current = habit.log(for: Date())?.value ?? 0
+                    let current = habit.log(for: appNow())?.value ?? 0
                     let unit = habit.unit ?? ""
                     Text("\(String(format: "%.1f", current))/\(String(format: "%.0f", target)) \(unit)")
                         .font(.system(size: 10, weight: .medium, design: .serif))
@@ -89,6 +90,12 @@ struct HabitCard: View {
                         .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
                 )
         )
+        .onTapGesture {
+            showDetail = true
+        }
+        .sheet(isPresented: $showDetail) {
+            HabitDetailView(habit: habit)
+        }
         .alert("Log \(habit.unit ?? "value")", isPresented: $showNumericInput) {
             TextField("Amount", text: $numericText)
                 .keyboardType(.decimalPad)
@@ -101,7 +108,7 @@ struct HabitCard: View {
             Button("Cancel", role: .cancel) { numericText = "" }
         } message: {
             if let target = habit.targetValue, let unit = habit.unit {
-                let current = habit.log(for: Date())?.value ?? 0
+                let current = habit.log(for: appNow())?.value ?? 0
                 Text("Current: \(String(format: "%.1f", current))/\(String(format: "%.0f", target)) \(unit)")
             }
         }

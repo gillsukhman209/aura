@@ -198,7 +198,7 @@ enum Weekday: String, Codable, CaseIterable, Identifiable, Hashable {
 
     /// The current weekday based on the user's calendar.
     static var today: Weekday {
-        let weekday = Calendar.current.component(.weekday, from: Date())
+        let weekday = Calendar.current.component(.weekday, from: appNow())
         return from(calendarWeekday: weekday)
     }
 }
