@@ -292,6 +292,16 @@ final class HabitManager {
         profile?.addStatXP(habit.statXP, to: habit.stat)
     }
 
+    // MARK: - Day Reset
+
+    /// Run day-reset evaluation on app foreground. Safe to call multiple times.
+    func performDayReset() {
+        guard let profile else { return }
+        let service = DayResetService(modelContext: modelContext)
+        service.evaluateIfNeeded(profile: profile, habits: habits)
+        refresh()
+    }
+
     // MARK: - Persistence
 
     private func save() {

@@ -1,13 +1,8 @@
-//
-//  ContentView.swift
-//  aura
-//
-//  Created by Sukhman Singh on 3/10/26.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(HabitManager.self) private var manager
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showMain = false
 
     var body: some View {
@@ -22,9 +17,13 @@ struct ContentView: View {
         }
         .animation(.easeInOut(duration: 0.6), value: showMain)
         .preferredColorScheme(.dark)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                manager.performDayReset()
+            }
+        }
+        .onAppear {
+            manager.performDayReset()
+        }
     }
-}
-
-#Preview {
-    ContentView()
 }
