@@ -4,7 +4,7 @@ import SwiftData
 @main
 struct auraApp: App {
     let modelContainer: ModelContainer
-    @State private var habitManager: HabitManager?
+    let habitManager: HabitManager
 
     init() {
         do {
@@ -17,42 +17,33 @@ struct auraApp: App {
                 schema: schema,
                 isStoredInMemoryOnly: false
             )
-            modelContainer = try ModelContainer(
+            let container = try ModelContainer(
                 for: schema,
                 configurations: [config]
             )
-        } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
-        }
-    }
+            self.modelContainer = container
 
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .onAppear {
-                    seedUserProfileIfNeeded()
-                    if habitManager == nil {
-                        habitManager = HabitManager(modelContext: modelContainer.mainContext)
-                    }
-                }
-                .environment(habitManager)
-        }
-        .modelContainer(modelContainer)
-    }
-
-    private func seedUserProfileIfNeeded() {
-        let context = modelContainer.mainContext
-        let descriptor = FetchDescriptor<UserProfile>()
-
-        do {
+            // Seed UserProfile before creating HabitManager
+            let context = container.mainContext
+            let descriptor = FetchDescriptor<UserProfile>()
             let existing = try context.fetch(descriptor)
             if existing.isEmpty {
                 let profile = UserProfile()
                 context.insert(profile)
                 try context.save()
             }
+
+            self.habitManager = HabitManager(modelContext: context)
         } catch {
-            print("Failed to seed UserProfile: \(error)")
+            fatalError("Failed to initialize app: \(error)")
         }
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(habitManager)
+        }
+        .modelContainer(modelContainer)
     }
 }

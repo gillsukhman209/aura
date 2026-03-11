@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RankView: View {
-    @Environment(HabitManager.self) private var manager: HabitManager?
+    @Environment(HabitManager.self) private var manager
     @State private var scoreAnimated: CGFloat = 0
 
     var body: some View {
@@ -16,7 +16,7 @@ struct RankView: View {
                         .tracking(4)
                         .padding(.top, 12)
 
-                    let currentRank = manager?.currentRank ?? AuraRank.ranks[0]
+                    let currentRank = manager.currentRank
 
                     VStack(spacing: 12) {
                         ZStack {
@@ -47,7 +47,7 @@ struct RankView: View {
                                 .shadow(color: Color(hex: currentRank.color).opacity(0.5), radius: 10)
                         }
 
-                        let score = manager?.consistencyScore ?? 0
+                        let score = manager.consistencyScore
 
                         VStack(spacing: 8) {
                             Text("Consistency Score: \(score) /100")
@@ -79,7 +79,7 @@ struct RankView: View {
                         .frame(height: 0.5)
 
                     VStack(spacing: 8) {
-                        ForEach(manager?.displayRanks ?? []) { rank in
+                        ForEach(manager.displayRanks) { rank in
                             RankCard(rank: rank)
                         }
                     }
@@ -90,7 +90,7 @@ struct RankView: View {
             }
         }
         .onAppear {
-            let score = manager?.consistencyScore ?? 0
+            let score = manager.consistencyScore
             withAnimation(.easeOut(duration: 1.2).delay(0.3)) {
                 scoreAnimated = CGFloat(score) / 100.0
             }

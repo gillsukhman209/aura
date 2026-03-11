@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct WeeklyProgressView: View {
-    @Environment(HabitManager.self) private var manager: HabitManager?
+    @Environment(HabitManager.self) private var manager
     @State private var animateValues = false
 
     var body: some View {
@@ -11,17 +11,17 @@ struct WeeklyProgressView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     VStack(spacing: 4) {
-                        Text("LEVEL \(manager?.level ?? 0)")
+                        Text("LEVEL \(manager.level)")
                             .font(.system(size: 16, weight: .regular, design: .serif))
                             .foregroundColor(AppTheme.textMuted)
                             .tracking(3)
 
-                        Text("LEVEL \((manager?.level ?? 0) + 1)")
+                        Text("LEVEL \(manager.level + 1)")
                             .font(.system(size: 40, weight: .bold, design: .serif))
                             .foregroundColor(.white)
 
                         GeometryReader { geo in
-                            let progress = manager?.profile?.levelProgress ?? 0
+                            let progress = manager.profile?.levelProgress ?? 0
                             ZStack(alignment: .leading) {
                                 Capsule().fill(AppTheme.barGroove).frame(height: 5)
                                 Capsule()
@@ -50,7 +50,7 @@ struct WeeklyProgressView: View {
                     }
                     .padding(.top, 8)
 
-                    let progress = manager?.weeklyProgress ?? []
+                    let progress = manager.weeklyProgress
                     if progress.isEmpty {
                         Text("Complete habits to see weekly progress")
                             .font(.system(size: 13, design: .serif))

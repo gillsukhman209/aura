@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StreakView: View {
-    @Environment(HabitManager.self) private var manager: HabitManager?
+    @Environment(HabitManager.self) private var manager
     @State private var flameScale: CGFloat = 0.8
     @State private var flameGlow = false
     @State private var numberVisible = false
@@ -20,7 +20,7 @@ struct StreakView: View {
             VStack(spacing: 0) {
                 Spacer()
 
-                let streak = manager?.currentStreak ?? 0
+                let streak = manager.currentStreak
 
                 ZStack {
                     Image(systemName: "flame.fill")

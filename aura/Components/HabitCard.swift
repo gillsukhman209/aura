@@ -2,11 +2,22 @@ import SwiftUI
 
 struct HabitCard: View {
     let habit: Habit
-    @Environment(HabitManager.self) private var manager: HabitManager?
+    @Environment(HabitManager.self) private var manager
     @State private var showCheck = false
+    @State private var showNumericInput = false
+    @State private var numericText = ""
 
-    private var isCompletedToday: Bool {
-        habit.isCompleted(on: Date())
+    /// Whether this habit has an explicit completed log today.
+    /// Quit habits use separate logic (no log = going strong, not "completed").
+    private var hasBuildOrNumericCompletion: Bool {
+        guard habit.type != .quit else { return false }
+        return habit.isCompleted(on: Date())
+    }
+
+    /// Whether a quit habit has relapsed today.
+    private var hasRelapsedToday: Bool {
+        guard habit.type == .quit else { return false }
+        return habit.log(for: Date())?.status == .relapsed
     }
 
     var body: some View {
@@ -55,56 +66,19 @@ struct HabitCard: View {
                         .font(.system(size: 10, weight: .medium, design: .serif))
                         .foregroundColor(AppTheme.textMuted)
                 }
+
+                // Quit habit status
+                if habit.type == .quit {
+                    Text(hasRelapsedToday ? "Relapsed" : "Going strong")
+                        .font(.system(size: 10, weight: .medium, design: .serif))
+                        .foregroundColor(hasRelapsedToday ? AppTheme.accentDanger : AppTheme.accentGreen)
+                }
             }
 
             Spacer()
 
-            // Completion indicator
-            if isCompletedToday {
-                ZStack {
-                    Circle()
-                        .fill(AppTheme.accentGreen.opacity(0.15))
-                        .frame(width: 32, height: 32)
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(AppTheme.accentGreen)
-                }
-                .scaleEffect(showCheck ? 1 : 0)
-                .onAppear {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.2)) {
-                        showCheck = true
-                    }
-                }
-            } else if habit.type == .quit {
-                // Quit habit: show relapse button
-                Button {
-                    manager?.logRelapse(habit)
-                } label: {
-                    ZStack {
-                        Circle()
-                            .fill(AppTheme.accentDanger.opacity(0.1))
-                            .frame(width: 32, height: 32)
-                        Image(systemName: "xmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(AppTheme.accentDanger.opacity(0.7))
-                    }
-                }
-            } else {
-                // Build / numeric: tap to complete
-                Button {
-                    if habit.type == .build {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
-                            manager?.completeBuildHabit(habit)
-                            showCheck = true
-                        }
-                    }
-                    // Numeric habits need a separate input flow (Phase 4)
-                } label: {
-                    Circle()
-                        .stroke(AppTheme.bgCardBorder, lineWidth: 1.5)
-                        .frame(width: 32, height: 32)
-                }
-            }
+            // ── Completion indicator ──
+            completionIndicator
         }
         .padding(14)
         .background(
@@ -115,5 +89,114 @@ struct HabitCard: View {
                         .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
                 )
         )
+        .alert("Log \(habit.unit ?? "value")", isPresented: $showNumericInput) {
+            TextField("Amount", text: $numericText)
+                .keyboardType(.decimalPad)
+            Button("Add") {
+                if let val = Double(numericText), val > 0 {
+                    manager.logNumericProgress(habit, value: val)
+                }
+                numericText = ""
+            }
+            Button("Cancel", role: .cancel) { numericText = "" }
+        } message: {
+            if let target = habit.targetValue, let unit = habit.unit {
+                let current = habit.log(for: Date())?.value ?? 0
+                Text("Current: \(String(format: "%.1f", current))/\(String(format: "%.0f", target)) \(unit)")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var completionIndicator: some View {
+        switch habit.type {
+        case .build:
+            if hasBuildOrNumericCompletion {
+                checkmark
+            } else {
+                Button {
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                        manager.completeBuildHabit(habit)
+                        showCheck = true
+                    }
+                } label: {
+                    ZStack {
+                        Circle()
+                            .stroke(AppTheme.bgCardBorder, lineWidth: 1.5)
+                            .frame(width: 32, height: 32)
+                    }
+                    .frame(width: 44, height: 44)
+                    .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+            }
+
+        case .quit:
+            if hasRelapsedToday {
+                // Relapsed — show red indicator
+                ZStack {
+                    Circle()
+                        .fill(AppTheme.accentDanger.opacity(0.15))
+                        .frame(width: 32, height: 32)
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(AppTheme.accentDanger)
+                }
+            } else {
+                // Going strong — show relapse button
+                Button {
+                    manager.logRelapse(habit)
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(AppTheme.accentDanger.opacity(0.08))
+                            .frame(width: 44, height: 44)
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(AppTheme.accentDanger.opacity(0.6))
+                    }
+                    .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+            }
+
+        case .numeric:
+            if hasBuildOrNumericCompletion {
+                checkmark
+            } else {
+                Button {
+                    showNumericInput = true
+                } label: {
+                    ZStack {
+                        Circle()
+                            .stroke(AppTheme.bgCardBorder, lineWidth: 1.5)
+                            .frame(width: 32, height: 32)
+                        Image(systemName: "plus")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(AppTheme.textMuted)
+                    }
+                    .frame(width: 44, height: 44)
+                    .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private var checkmark: some View {
+        ZStack {
+            Circle()
+                .fill(AppTheme.accentGreen.opacity(0.15))
+                .frame(width: 32, height: 32)
+            Image(systemName: "checkmark")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(AppTheme.accentGreen)
+        }
+        .scaleEffect(showCheck ? 1 : 0)
+        .onAppear {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.6).delay(0.2)) {
+                showCheck = true
+            }
+        }
     }
 }

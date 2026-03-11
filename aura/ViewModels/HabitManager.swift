@@ -212,6 +212,7 @@ final class HabitManager {
 
         let log = HabitLog(habit: habit, date: today, status: .completed)
         modelContext.insert(log)
+        habit.logs.append(log)
         awardXP(for: habit)
         save()
     }
@@ -226,6 +227,7 @@ final class HabitManager {
         } else {
             let log = HabitLog(habit: habit, date: today, status: .relapsed)
             modelContext.insert(log)
+            habit.logs.append(log)
         }
         save()
     }
@@ -258,6 +260,7 @@ final class HabitManager {
             }
             let log = HabitLog(habit: habit, date: today, status: status, value: value)
             modelContext.insert(log)
+            habit.logs.append(log)
 
             if status == .completed {
                 awardXP(for: habit)
@@ -277,6 +280,7 @@ final class HabitManager {
             profile?.addStatXP(-habit.statXP, to: habit.stat)
         }
 
+        habit.logs.removeAll { $0.id == log.id }
         modelContext.delete(log)
         save()
     }

@@ -93,9 +93,9 @@ struct MainTabView: View {
 
 // MARK: - Character Stats (moved from home to its own tab)
 struct CharacterStatsView: View {
-    @Environment(HabitManager.self) private var manager: HabitManager?
+    @Environment(HabitManager.self) private var manager
 
-    private var stats: [DisplayStat] { manager?.characterStats ?? [] }
+    private var stats: [DisplayStat] { manager.characterStats }
 
     var body: some View {
         ZStack {

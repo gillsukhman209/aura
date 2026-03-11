@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DailyQuestsView: View {
-    @Environment(HabitManager.self) private var manager: HabitManager?
+    @Environment(HabitManager.self) private var manager
     @State private var showBonus = false
     @State private var bonusProgress: CGFloat = 0
 
@@ -17,14 +17,12 @@ struct DailyQuestsView: View {
                         .tracking(4)
                         .padding(.top, 12)
 
-                    if let manager {
-                        ForEach(manager.todaysHabits) { habit in
-                            HabitCard(habit: habit)
-                        }
+                    ForEach(manager.todaysHabits) { habit in
+                        HabitCard(habit: habit)
                     }
 
                     // Daily Completion Bonus
-                    if let manager, manager.allTodayCompleted, !manager.todaysHabits.isEmpty {
+                    if manager.allTodayCompleted, !manager.todaysHabits.isEmpty {
                         VStack(spacing: 10) {
                             HStack {
                                 Text("Daily Completion Bonus")
