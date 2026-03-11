@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RankCard: View {
-    let rank: GameRank
+    let rank: DisplayRank
 
     var body: some View {
         HStack(spacing: 14) {
@@ -42,7 +42,7 @@ struct RankCard: View {
                         .font(.system(size: 8))
                         .foregroundColor(rank.isCurrent ? rank.color : AppTheme.textSubtle)
                 }
-                Text("\(rank.xpRequired)")
+                Text("\(rank.threshold)%")
                     .font(.system(size: 14, weight: .semibold, design: .serif))
                     .foregroundColor(
                         rank.isCurrent ? rank.color :

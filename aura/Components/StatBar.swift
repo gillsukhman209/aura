@@ -1,13 +1,13 @@
 import SwiftUI
 
 struct StatBar: View {
-    let stat: CharacterStat
+    let stat: DisplayStat
     let isLast: Bool
     @State private var barFill: CGFloat = 0
 
     private var pct: CGFloat { CGFloat(stat.value) / CGFloat(stat.maxValue) }
 
-    init(stat: CharacterStat, isLast: Bool = false) {
+    init(stat: DisplayStat, isLast: Bool = false) {
         self.stat = stat
         self.isLast = isLast
     }

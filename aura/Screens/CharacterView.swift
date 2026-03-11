@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CharacterView: View {
-    let quests = MockData.dailyQuests
+    @Environment(HabitManager.self) private var manager: HabitManager?
     @State private var showBonus = false
     @State private var bonusProgress: CGFloat = 0
 
@@ -23,9 +23,9 @@ struct CharacterView: View {
 
                 // ── XP Ring ──
                 XPRing(
-                    level: MockData.level,
-                    currentXP: MockData.currentXP,
-                    maxXP: MockData.maxXP
+                    level: manager?.level ?? 0,
+                    currentXP: manager?.currentLevelXP ?? 0,
+                    maxXP: manager?.xpPerLevel ?? 100
                 )
                 .padding(.top, -8)
 
@@ -50,6 +50,7 @@ struct CharacterView: View {
                     Text("Today's Quests")
                         .font(.custom("Georgia-Italic", size: 14))
                         .foregroundColor(AppTheme.textMuted)
+                        .shadow(color: AppTheme.textMuted.opacity(0.3), radius: 4)
                         .fixedSize()
 
                     HStack(spacing: 0) {
@@ -71,43 +72,60 @@ struct CharacterView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 6)
 
-                // ── Quest cards ──
+                // ── Habit cards ──
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 8) {
-                        ForEach(quests) { quest in
-                            QuestCard(quest: quest)
+                        if let manager, !manager.todaysHabits.isEmpty {
+                            ForEach(manager.todaysHabits) { habit in
+                                HabitCard(habit: habit)
+                            }
+                        } else {
+                            VStack(spacing: 12) {
+                                Image(systemName: "plus.circle.dashed")
+                                    .font(.system(size: 40, weight: .ultraLight))
+                                    .foregroundColor(AppTheme.textSubtle)
+                                Text("No habits yet")
+                                    .font(.custom("Georgia", size: 14))
+                                    .foregroundColor(AppTheme.textMuted)
+                                Text("Create your first habit to start leveling up")
+                                    .font(.system(size: 12, design: .serif))
+                                    .foregroundColor(AppTheme.textSubtle)
+                            }
+                            .padding(.top, 30)
                         }
 
                         // Daily Completion Bonus
-                        HStack {
-                            Text("Daily Completion Bonus")
-                                .font(.system(size: 12, weight: .medium, design: .serif))
-                                .foregroundColor(AppTheme.textMuted)
-                            Spacer()
-                            Text("+40")
-                                .font(.system(size: 13, weight: .bold, design: .serif))
-                                .foregroundColor(AppTheme.gold)
+                        if let manager, manager.allTodayCompleted, !manager.todaysHabits.isEmpty {
+                            HStack {
+                                Text("Daily Completion Bonus")
+                                    .font(.system(size: 12, weight: .medium, design: .serif))
+                                    .foregroundColor(AppTheme.textMuted)
+                                Spacer()
+                                Text("+40")
+                                    .font(.system(size: 13, weight: .bold, design: .serif))
+                                    .foregroundColor(AppTheme.gold)
 
-                            ZStack {
-                                Circle()
-                                    .fill(AppTheme.accentGreen.opacity(0.15))
-                                    .frame(width: 26, height: 26)
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundColor(AppTheme.accentGreen)
+                                ZStack {
+                                    Circle()
+                                        .fill(AppTheme.accentGreen.opacity(0.15))
+                                        .frame(width: 26, height: 26)
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundColor(AppTheme.accentGreen)
+                                }
+                                .scaleEffect(showBonus ? 1 : 0)
                             }
-                            .scaleEffect(showBonus ? 1 : 0)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(AppTheme.bgCard.opacity(0.5))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(AppTheme.gold.opacity(0.12), lineWidth: 0.5)
+                                    )
+                            )
                         }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(AppTheme.bgCard.opacity(0.5))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(AppTheme.gold.opacity(0.12), lineWidth: 0.5)
-                                )
-                        )
                     }
                     .padding(.horizontal, 14)
                     .padding(.bottom, 70)
@@ -115,6 +133,7 @@ struct CharacterView: View {
             }
         }
         .onAppear {
+            manager?.refresh()
             withAnimation(.easeOut(duration: 1.2).delay(0.5)) { bonusProgress = 1.0 }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(1.2)) { showBonus = true }
         }

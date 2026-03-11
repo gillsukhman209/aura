@@ -93,7 +93,9 @@ struct MainTabView: View {
 
 // MARK: - Character Stats (moved from home to its own tab)
 struct CharacterStatsView: View {
-    let stats = MockData.stats
+    @Environment(HabitManager.self) private var manager: HabitManager?
+
+    private var stats: [DisplayStat] { manager?.characterStats ?? [] }
 
     var body: some View {
         ZStack {

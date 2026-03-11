@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RankView: View {
-    let ranks = MockData.ranks
+    @Environment(HabitManager.self) private var manager: HabitManager?
     @State private var scoreAnimated: CGFloat = 0
 
     var body: some View {
@@ -16,14 +16,16 @@ struct RankView: View {
                         .tracking(4)
                         .padding(.top, 12)
 
+                    let currentRank = manager?.currentRank ?? AuraRank.ranks[0]
+
                     VStack(spacing: 12) {
                         ZStack {
                             Circle()
                                 .fill(
                                     RadialGradient(
                                         colors: [
-                                            Color(hex: "CD7F32").opacity(0.2),
-                                            Color(hex: "CD7F32").opacity(0.05),
+                                            Color(hex: currentRank.color).opacity(0.2),
+                                            Color(hex: currentRank.color).opacity(0.05),
                                             .clear
                                         ],
                                         center: .center,
@@ -33,20 +35,22 @@ struct RankView: View {
                                 )
                                 .frame(width: 120, height: 120)
 
-                            Image(systemName: "shield.lefthalf.filled")
+                            Image(systemName: currentRank.icon)
                                 .font(.system(size: 50, weight: .semibold))
                                 .foregroundStyle(
                                     LinearGradient(
-                                        colors: [Color(hex: "CD7F32"), AppTheme.goldBright],
+                                        colors: [Color(hex: currentRank.color), AppTheme.goldBright],
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
                                 )
-                                .shadow(color: Color(hex: "CD7F32").opacity(0.5), radius: 10)
+                                .shadow(color: Color(hex: currentRank.color).opacity(0.5), radius: 10)
                         }
 
+                        let score = manager?.consistencyScore ?? 0
+
                         VStack(spacing: 8) {
-                            Text("Consistency Score: \(MockData.consistencyScore) /100")
+                            Text("Consistency Score: \(score) /100")
                                 .font(.system(size: 13, weight: .medium, design: .serif))
                                 .foregroundColor(AppTheme.textMuted)
 
@@ -56,12 +60,12 @@ struct RankView: View {
                                     Capsule()
                                         .fill(
                                             LinearGradient(
-                                                colors: [Color(hex: "CD7F32"), AppTheme.goldBright],
+                                                colors: [Color(hex: currentRank.color), AppTheme.goldBright],
                                                 startPoint: .leading, endPoint: .trailing
                                             )
                                         )
                                         .frame(width: scoreAnimated * geo.size.width, height: 4)
-                                        .shadow(color: Color(hex: "CD7F32").opacity(0.3), radius: 3)
+                                        .shadow(color: Color(hex: currentRank.color).opacity(0.3), radius: 3)
                                 }
                             }
                             .frame(height: 4)
@@ -75,7 +79,7 @@ struct RankView: View {
                         .frame(height: 0.5)
 
                     VStack(spacing: 8) {
-                        ForEach(ranks) { rank in
+                        ForEach(manager?.displayRanks ?? []) { rank in
                             RankCard(rank: rank)
                         }
                     }
@@ -86,8 +90,9 @@ struct RankView: View {
             }
         }
         .onAppear {
+            let score = manager?.consistencyScore ?? 0
             withAnimation(.easeOut(duration: 1.2).delay(0.3)) {
-                scoreAnimated = CGFloat(MockData.consistencyScore) / 100.0
+                scoreAnimated = CGFloat(score) / 100.0
             }
         }
     }

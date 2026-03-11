@@ -1,7 +1,10 @@
 import SwiftUI
 
 struct TrainingCategoryCard: View {
-    let category: TrainingCategory
+    let name: String
+    let subtitle: String
+    let icon: String
+    let color: Color
     @State private var glowPulse = false
 
     var body: some View {
@@ -11,7 +14,7 @@ struct TrainingCategoryCard: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                category.color.opacity(0.15),
+                                color.opacity(0.15),
                                 AppTheme.barGroove,
                                 AppTheme.bgPure
                             ],
@@ -21,9 +24,9 @@ struct TrainingCategoryCard: View {
                     )
                     .frame(height: 120)
 
-                Image(systemName: category.icon)
+                Image(systemName: icon)
                     .font(.system(size: 40, weight: .light))
-                    .foregroundColor(category.color.opacity(0.3))
+                    .foregroundColor(color.opacity(0.3))
 
                 VStack {
                     Spacer()
@@ -37,10 +40,10 @@ struct TrainingCategoryCard: View {
             .clipped()
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(category.name)
+                Text(name)
                     .font(.system(size: 14, weight: .medium, design: .serif))
                     .foregroundColor(.white)
-                Text(category.subtitle)
+                Text(subtitle)
                     .font(.system(size: 11, weight: .regular, design: .serif))
                     .foregroundColor(AppTheme.textMuted)
             }
@@ -51,9 +54,9 @@ struct TrainingCategoryCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(category.color.opacity(glowPulse ? 0.3 : 0.1), lineWidth: 1)
+                .stroke(color.opacity(glowPulse ? 0.3 : 0.1), lineWidth: 1)
         )
-        .shadow(color: category.color.opacity(glowPulse ? 0.15 : 0.05), radius: 8)
+        .shadow(color: color.opacity(glowPulse ? 0.15 : 0.05), radius: 8)
         .onAppear {
             withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
                 glowPulse = true
