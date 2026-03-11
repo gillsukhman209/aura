@@ -70,7 +70,7 @@ struct HabitDetailView: View {
                         )
                         quickStatCard(
                             value: "\(analytics.totalXPEarned)",
-                            label: "XP",
+                            label: "AP",
                             icon: "star.fill",
                             color: AppTheme.gold
                         )

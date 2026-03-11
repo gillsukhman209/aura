@@ -20,7 +20,7 @@ struct WeeklyXPChart: View {
                     .foregroundColor(AppTheme.textMuted)
                     .tracking(2)
                 Spacer()
-                Text("\(totalWeekXP) XP")
+                Text("\(totalWeekXP) AP")
                     .font(.system(size: 14, weight: .bold, design: .serif))
                     .foregroundColor(AppTheme.accentGreen)
             }

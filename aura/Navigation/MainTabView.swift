@@ -133,7 +133,7 @@ struct StatsView: View {
                         .padding(.horizontal, 40)
                         .padding(.top, 8)
 
-                        Text("\(manager.currentLevelXP) / \(manager.xpPerLevel) XP")
+                        Text("\(manager.currentLevelXP) / \(manager.xpPerLevel) AP")
                             .font(.system(size: 11, weight: .medium, design: .serif))
                             .foregroundColor(info.color)
                             .padding(.top, 4)
@@ -243,7 +243,7 @@ struct StatsView: View {
 
                     // ── Weekly XP Progress ──
                     HStack {
-                        Text("XP GAINED THIS WEEK")
+                        Text("AURA GAINED THIS WEEK")
                             .font(.system(size: 11, weight: .medium, design: .serif))
                             .foregroundColor(AppTheme.textMuted)
                             .tracking(2)
@@ -301,6 +301,8 @@ struct StatsView: View {
 
 // MARK: - Profile
 struct MoreView: View {
+    @State private var showAuraCheck = false
+
     var body: some View {
         ZStack {
             StarfieldBackground(starCount: 150)
@@ -313,12 +315,20 @@ struct MoreView: View {
                         .tracking(2)
                         .padding(.top, 14)
 
+                    Button { showAuraCheck = true } label: {
+                        ProfileMenuItem(icon: "sparkles", title: "Aura Check", color: Color(hex: "B9F2FF"))
+                    }
+                    .buttonStyle(.plain)
+
                     NavigationLink(destination: StreakView()) {
                         ProfileMenuItem(icon: "bolt.fill", title: "Streak", color: AppTheme.goldBright)
                     }
                     NavigationLink(destination: ResetView()) {
                         ProfileMenuItem(icon: "arrow.counterclockwise", title: "Reset", color: AppTheme.accentDanger)
                     }
+                }
+                .fullScreenCover(isPresented: $showAuraCheck) {
+                    AuraCheckView()
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)

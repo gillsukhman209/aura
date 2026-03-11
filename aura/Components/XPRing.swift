@@ -184,7 +184,7 @@ struct XPRing: View {
                 .scaleEffect(badgeScale)
                 .opacity(badgeOpacity)
 
-                Text("\(currentXP) / \(maxXP)")
+                Text("\(currentXP) / \(maxXP) AP")
                     .font(.system(size: 11, weight: .medium, design: .serif))
                     .foregroundColor(AppTheme.textGold)
                     .shadow(color: AppTheme.textGold.opacity(0.3), radius: 4)

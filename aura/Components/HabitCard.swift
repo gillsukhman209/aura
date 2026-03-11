@@ -7,6 +7,9 @@ struct HabitCard: View {
     @State private var showNumericInput = false
     @State private var numericText = ""
     @State private var showDetail = false
+    @State private var showAPFloat = false
+    @State private var apFloatOffset: CGFloat = 0
+    @State private var apFloatOpacity: Double = 0
 
     /// Whether this habit has an explicit completed log today.
     /// Quit habits use separate logic (no log = going strong, not "completed").
@@ -19,6 +22,21 @@ struct HabitCard: View {
     private var hasRelapsedToday: Bool {
         guard habit.type == .quit else { return false }
         return habit.log(for: appNow())?.status == .relapsed
+    }
+
+    private func triggerAPFloat() {
+        apFloatOffset = 0
+        apFloatOpacity = 1
+        showAPFloat = true
+        withAnimation(.easeOut(duration: 1.2)) {
+            apFloatOffset = -50
+        }
+        withAnimation(.easeOut(duration: 1.2).delay(0.4)) {
+            apFloatOpacity = 0
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+            showAPFloat = false
+        }
     }
 
     var body: some View {
@@ -54,7 +72,7 @@ struct HabitCard: View {
                     Text("+\(habit.baseXP)")
                         .font(.system(size: 12, weight: .semibold, design: .serif))
                         .foregroundColor(AppTheme.textGold)
-                    Text(habit.stat.label + " XP")
+                    Text(habit.stat.label + " AP")
                         .font(.system(size: 12, weight: .semibold, design: .serif))
                         .foregroundColor(AppTheme.textGold)
                 }
@@ -90,6 +108,18 @@ struct HabitCard: View {
                         .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
                 )
         )
+        .overlay(alignment: .trailing) {
+            if showAPFloat {
+                Text("+\(habit.baseXP) Aura")
+                    .font(.system(size: 15, weight: .bold, design: .serif))
+                    .foregroundColor(AppTheme.gold)
+                    .shadow(color: AppTheme.gold.opacity(0.5), radius: 6)
+                    .offset(y: apFloatOffset)
+                    .opacity(apFloatOpacity)
+                    .allowsHitTesting(false)
+                    .padding(.trailing, 16)
+            }
+        }
         .onTapGesture {
             showDetail = true
         }
@@ -101,7 +131,11 @@ struct HabitCard: View {
                 .keyboardType(.decimalPad)
             Button("Add") {
                 if let val = Double(numericText), val > 0 {
+                    let wasDone = habit.isCompleted(on: appNow())
                     manager.logNumericProgress(habit, value: val)
+                    if !wasDone && habit.isCompleted(on: appNow()) {
+                        triggerAPFloat()
+                    }
                 }
                 numericText = ""
             }
@@ -126,6 +160,7 @@ struct HabitCard: View {
                         manager.completeBuildHabit(habit)
                         showCheck = true
                     }
+                    triggerAPFloat()
                 } label: {
                     ZStack {
                         Circle()

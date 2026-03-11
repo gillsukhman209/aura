@@ -76,7 +76,7 @@ struct RankView: View {
                             .frame(height: 4)
                             .padding(.horizontal, 40)
 
-                            Text("\(info.currentXP) / \(info.xpRequired) XP")
+                            Text("\(info.currentXP) / \(info.xpRequired) AP")
                                 .font(.system(size: 12, weight: .medium, design: .serif))
                                 .foregroundColor(info.color)
                         }

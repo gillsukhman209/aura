@@ -147,7 +147,7 @@ struct CreateHabitView: View {
                         HStack(spacing: 8) {
                             ForEach(Difficulty.allCases) { d in
                                 chipButton(
-                                    label: "\(d.label) (+\(d.baseXP))",
+                                    label: "\(d.label) (+\(d.baseXP) AP)",
                                     icon: nil,
                                     selected: difficulty == d,
                                     color: difficulty == d ? d.color : AppTheme.textMuted

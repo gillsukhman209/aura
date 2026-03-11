@@ -67,7 +67,7 @@ struct LevelRoadmapView: View {
                         .font(.system(size: 20, weight: .bold, design: .serif))
                         .foregroundColor(.white)
 
-                    Text("\(info.currentXP) / \(info.xpRequired) XP")
+                    Text("\(info.currentXP) / \(info.xpRequired) AP")
                         .font(.system(size: 13, weight: .medium, design: .serif))
                         .foregroundColor(info.color)
                 }
@@ -158,7 +158,7 @@ struct RoadmapRow: View {
                 Text("\(level.currentXPInLevel)/\(level.xpRequired)")
                     .font(.system(size: 14, weight: .bold, design: .serif))
                     .foregroundColor(level.tier.color)
-                + Text(" XP")
+                + Text(" AP")
                     .font(.system(size: 10, weight: .medium, design: .serif))
                     .foregroundColor(level.tier.color.opacity(0.7))
             } else if level.isCompleted {
@@ -169,7 +169,7 @@ struct RoadmapRow: View {
                 Text("0/\(level.xpRequired)")
                     .font(.system(size: 13, weight: .medium, design: .serif))
                     .foregroundColor(AppTheme.textSubtle)
-                + Text(" XP")
+                + Text(" AP")
                     .font(.system(size: 10, weight: .medium, design: .serif))
                     .foregroundColor(AppTheme.textSubtle.opacity(0.7))
             }
