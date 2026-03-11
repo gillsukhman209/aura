@@ -5,7 +5,7 @@ struct StatBar: View {
     let isLast: Bool
     @State private var barFill: CGFloat = 0
 
-    private var pct: CGFloat { CGFloat(stat.value) / CGFloat(stat.maxValue) }
+    private var pct: CGFloat { min(CGFloat(stat.value) / CGFloat(max(1, stat.maxValue)), 1.0) }
 
     init(stat: DisplayStat, isLast: Bool = false) {
         self.stat = stat

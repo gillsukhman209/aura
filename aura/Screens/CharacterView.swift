@@ -171,7 +171,7 @@ struct CharacterView: View {
                                     .font(.system(size: 12, weight: .medium, design: .serif))
                                     .foregroundColor(AppTheme.textMuted)
                                 Spacer()
-                                Text("+40")
+                                Text("+40 AP")
                                     .font(.system(size: 13, weight: .bold, design: .serif))
                                     .foregroundColor(AppTheme.gold)
 

@@ -24,6 +24,7 @@ final class HabitManager {
         fetchProfile()
         fetchHabits()
         syncProfileState()
+        dailyBonusAwarded = false
     }
 
     private func fetchProfile() {
@@ -307,10 +308,28 @@ final class HabitManager {
 
     // MARK: - XP Engine
 
+    /// Whether the daily completion bonus has been awarded today.
+    private(set) var dailyBonusAwarded: Bool = false
+
     private func awardXP(for habit: Habit) {
         profile?.addXP(habit.baseXP)
         profile?.addStatXP(habit.statXP, to: habit.stat)
         syncProfileState()
+        checkDailyCompletionBonus()
+    }
+
+    /// Award +40 AP bonus when all today's habits are completed (once per day).
+    private func checkDailyCompletionBonus() {
+        guard !dailyBonusAwarded, allTodayCompleted else { return }
+        profile?.addXP(40)
+        dailyBonusAwarded = true
+        syncProfileState()
+        save()
+    }
+
+    /// Reset the daily bonus flag (called on day change).
+    func resetDailyBonus() {
+        dailyBonusAwarded = false
     }
 
     // MARK: - Day Reset
@@ -340,7 +359,15 @@ struct DisplayStat: Identifiable {
     var name: String { statType.label }
     var icon: String { statType.icon }
     var color: Color { statType.color }
-    var maxValue: Int { 100 }
+    /// Scale the bar to the next milestone above current value
+    var maxValue: Int {
+        if value <= 10 { return 10 }
+        if value <= 25 { return 25 }
+        if value <= 50 { return 50 }
+        if value <= 100 { return 100 }
+        // Round up to next 100
+        return ((value / 100) + 1) * 100
+    }
     var subtitle: String { "RANK" }
 }
 
