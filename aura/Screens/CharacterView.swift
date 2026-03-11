@@ -58,11 +58,24 @@ struct CharacterView: View {
 
                 // ── XP Ring ──
                 XPRing(
-                    level: manager.level,
+                    levelInfo: manager.levelInfo,
                     currentXP: manager.currentLevelXP,
                     maxXP: manager.xpPerLevel
                 )
                 .padding(.top, -8)
+
+                // ── Rank name ──
+                VStack(spacing: 2) {
+                    Text("Level \(manager.level)")
+                        .font(.system(size: 13, weight: .medium, design: .serif))
+                        .foregroundColor(AppTheme.textMuted)
+                    Text(manager.levelInfo.displayName)
+                        .font(.system(size: 18, weight: .bold, design: .serif))
+                        .foregroundColor(manager.levelInfo.color)
+                        .shadow(color: manager.levelInfo.color.opacity(0.3), radius: 4)
+                }
+                .padding(.top, -8)
+                .padding(.bottom, 4)
 
                 // ── "Today's Quests" header ──
                 HStack(spacing: 6) {

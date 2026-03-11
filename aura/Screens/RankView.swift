@@ -3,6 +3,7 @@ import SwiftUI
 struct RankView: View {
     @Environment(HabitManager.self) private var manager
     @State private var scoreAnimated: CGFloat = 0
+    @State private var showRoadmap = false
 
     var body: some View {
         ZStack {
@@ -10,13 +11,14 @@ struct RankView: View {
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
-                    Text("RANKS")
+                    Text("RANK")
                         .font(.system(size: 20, weight: .regular, design: .serif))
                         .foregroundColor(.white)
                         .tracking(4)
                         .padding(.top, 12)
 
-                    let currentRank = manager.currentRank
+                    // ── Current rank badge ──
+                    let info = manager.levelInfo
 
                     VStack(spacing: 12) {
                         ZStack {
@@ -24,8 +26,8 @@ struct RankView: View {
                                 .fill(
                                     RadialGradient(
                                         colors: [
-                                            Color(hex: currentRank.color).opacity(0.2),
-                                            Color(hex: currentRank.color).opacity(0.05),
+                                            info.color.opacity(0.2),
+                                            info.color.opacity(0.05),
                                             .clear
                                         ],
                                         center: .center,
@@ -35,42 +37,56 @@ struct RankView: View {
                                 )
                                 .frame(width: 120, height: 120)
 
-                            Image(systemName: currentRank.icon)
+                            Image(systemName: info.icon)
                                 .font(.system(size: 50, weight: .semibold))
                                 .foregroundStyle(
                                     LinearGradient(
-                                        colors: [Color(hex: currentRank.color), AppTheme.goldBright],
+                                        colors: [info.color, info.color.opacity(0.7)],
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
                                 )
-                                .shadow(color: Color(hex: currentRank.color).opacity(0.5), radius: 10)
+                                .shadow(color: info.color.opacity(0.5), radius: 10)
                         }
 
-                        let score = manager.consistencyScore
+                        Text(info.displayName)
+                            .font(.system(size: 22, weight: .bold, design: .serif))
+                            .foregroundColor(.white)
 
-                        VStack(spacing: 8) {
-                            Text("Consistency Score: \(score) /100")
-                                .font(.system(size: 13, weight: .medium, design: .serif))
-                                .foregroundColor(AppTheme.textMuted)
+                        Text("Level \(info.globalLevel)")
+                            .font(.system(size: 13, weight: .medium, design: .serif))
+                            .foregroundColor(AppTheme.textMuted)
 
+                        // XP progress bar
+                        VStack(spacing: 6) {
                             GeometryReader { geo in
                                 ZStack(alignment: .leading) {
                                     Capsule().fill(AppTheme.barGroove).frame(height: 4)
                                     Capsule()
                                         .fill(
                                             LinearGradient(
-                                                colors: [Color(hex: currentRank.color), AppTheme.goldBright],
+                                                colors: [info.color, info.color.opacity(0.6)],
                                                 startPoint: .leading, endPoint: .trailing
                                             )
                                         )
                                         .frame(width: scoreAnimated * geo.size.width, height: 4)
-                                        .shadow(color: Color(hex: currentRank.color).opacity(0.3), radius: 3)
+                                        .shadow(color: info.color.opacity(0.3), radius: 3)
                                 }
                             }
                             .frame(height: 4)
                             .padding(.horizontal, 40)
+
+                            Text("\(info.currentXP) / \(info.xpRequired) XP")
+                                .font(.system(size: 12, weight: .medium, design: .serif))
+                                .foregroundColor(info.color)
                         }
+
+                        // Consistency score
+                        let score = manager.consistencyScore
+                        Text("Consistency: \(score)%")
+                            .font(.system(size: 12, weight: .medium, design: .serif))
+                            .foregroundColor(AppTheme.textMuted)
+                            .padding(.top, 4)
                     }
                     .padding(.vertical, 16)
 
@@ -78,9 +94,102 @@ struct RankView: View {
                         .fill(LinearGradient(colors: [.clear, AppTheme.bgCardBorder, .clear], startPoint: .leading, endPoint: .trailing))
                         .frame(height: 0.5)
 
-                    VStack(spacing: 8) {
-                        ForEach(manager.displayRanks) { rank in
-                            RankCard(rank: rank)
+                    // ── View All Levels button ──
+                    Button { showRoadmap = true } label: {
+                        HStack {
+                            Image(systemName: "list.number")
+                                .font(.system(size: 14, weight: .medium))
+                            Text("View All Levels")
+                                .font(.system(size: 14, weight: .medium, design: .serif))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                        }
+                        .foregroundColor(AppTheme.textMuted)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(AppTheme.bgCard.opacity(0.5))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(AppTheme.bgCardBorder.opacity(0.3), lineWidth: 0.5)
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    Rectangle()
+                        .fill(LinearGradient(colors: [.clear, AppTheme.bgCardBorder, .clear], startPoint: .leading, endPoint: .trailing))
+                        .frame(height: 0.5)
+
+                    // ── Rank tier preview ──
+                    Text("RANK TIERS")
+                        .font(.system(size: 11, weight: .medium, design: .serif))
+                        .foregroundColor(AppTheme.textMuted)
+                        .tracking(2)
+
+                    VStack(spacing: 6) {
+                        ForEach(RankTier.allCases, id: \.rawValue) { tier in
+                            let isCurrentTier = tier == manager.levelInfo.tier
+                            let isUnlocked = tier.rawValue <= manager.levelInfo.tier.rawValue
+
+                            HStack(spacing: 14) {
+                                ZStack {
+                                    Circle()
+                                        .fill(tier.color.opacity(isUnlocked ? 0.12 : 0.04))
+                                        .frame(width: 40, height: 40)
+                                    if isUnlocked {
+                                        Image(systemName: tier.icon)
+                                            .font(.system(size: 16, weight: .semibold))
+                                            .foregroundColor(tier.color)
+                                    } else {
+                                        Image(systemName: "lock.fill")
+                                            .font(.system(size: 13))
+                                            .foregroundColor(AppTheme.textSubtle)
+                                    }
+                                }
+
+                                Text(tier.name)
+                                    .font(.system(size: 15, weight: isCurrentTier ? .bold : .medium, design: .serif))
+                                    .foregroundColor(
+                                        isCurrentTier ? .white :
+                                        isUnlocked ? AppTheme.textMuted : AppTheme.textSubtle
+                                    )
+
+                                Spacer()
+
+                                if isCurrentTier {
+                                    Text("CURRENT")
+                                        .font(.system(size: 9, weight: .bold))
+                                        .foregroundColor(tier.color)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 3)
+                                        .background(
+                                            Capsule().fill(tier.color.opacity(0.15))
+                                        )
+                                }
+
+                                Text("Lv \(tier.rawValue * 5 + 1)-\(tier.rawValue * 5 + 5)")
+                                    .font(.system(size: 12, weight: .medium, design: .serif))
+                                    .foregroundColor(
+                                        isCurrentTier ? tier.color :
+                                        isUnlocked ? AppTheme.textMuted : AppTheme.textSubtle
+                                    )
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(isCurrentTier ? tier.color.opacity(0.08) : AppTheme.bgCard.opacity(0.5))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(
+                                                isCurrentTier ? tier.color.opacity(0.3) : AppTheme.bgCardBorder.opacity(0.2),
+                                                lineWidth: isCurrentTier ? 1.5 : 0.5
+                                            )
+                                    )
+                            )
                         }
                     }
 
@@ -90,10 +199,14 @@ struct RankView: View {
             }
         }
         .onAppear {
-            let score = manager.consistencyScore
+            let info = manager.levelInfo
+            let progress = CGFloat(info.currentXP) / CGFloat(max(1, info.xpRequired))
             withAnimation(.easeOut(duration: 1.2).delay(0.3)) {
-                scoreAnimated = CGFloat(score) / 100.0
+                scoreAnimated = progress
             }
+        }
+        .fullScreenCover(isPresented: $showRoadmap) {
+            LevelRoadmapView()
         }
     }
 }

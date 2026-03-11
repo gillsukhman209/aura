@@ -61,19 +61,21 @@ final class HabitManager {
 
     // MARK: - Profile Accessors (stored for @Observable reactivity)
 
-    private(set) var level: Int = 0
+    private(set) var levelInfo: LevelInfo = LevelSystem.levelInfo(for: 0)
     private(set) var totalXP: Int = 0
-    private(set) var currentLevelXP: Int = 0
-    private(set) var xpPerLevel: Int = 100
     private(set) var currentStreak: Int = 0
     private(set) var longestStreak: Int = 0
 
+    // Convenience accessors
+    var level: Int { levelInfo.globalLevel }
+    var currentLevelXP: Int { levelInfo.currentXP }
+    var xpPerLevel: Int { levelInfo.xpRequired }
+
     /// Sync stored properties from profile so @Observable detects changes.
     private func syncProfileState() {
-        level = profile?.level ?? 0
-        totalXP = profile?.totalXP ?? 0
-        currentLevelXP = profile?.currentLevelXP ?? 0
-        xpPerLevel = profile?.xpPerLevel ?? 100
+        let xp = profile?.totalXP ?? 0
+        totalXP = xp
+        levelInfo = LevelSystem.levelInfo(for: xp)
         currentStreak = profile?.currentStreak ?? 0
         longestStreak = profile?.longestStreak ?? 0
     }
@@ -135,34 +137,40 @@ final class HabitManager {
         return Int(Double(totalCompleted) / Double(totalScheduled) * 100)
     }
 
-    /// Rank based on consistency score.
-    var currentRank: AuraRank {
-        let score = consistencyScore
-        let thresholds: [(Int, AuraRank)] = [
-            (95, AuraRank.ranks[5]), // Diamond
-            (85, AuraRank.ranks[4]), // Gold
-            (70, AuraRank.ranks[3]), // Silver
-            (50, AuraRank.ranks[2]), // Bronze
-            (30, AuraRank.ranks[1]), // Iron
-        ]
-        for (threshold, rank) in thresholds {
-            if score >= threshold { return rank }
-        }
-        return AuraRank.ranks[0] // Unranked
+    /// Level roadmap for display.
+    var roadmapLevels: [RoadmapLevel] {
+        LevelSystem.allLevels(currentTotalXP: totalXP)
     }
 
-    var displayRanks: [DisplayRank] {
-        let score = consistencyScore
-        let thresholds = [0, 30, 50, 70, 85, 95]
-        return AuraRank.ranks.enumerated().map { i, rank in
-            let isUnlocked = score >= thresholds[i]
-            let isCurrent = rank.name == currentRank.name
-            return DisplayRank(
-                rank: rank,
-                threshold: thresholds[i],
-                isUnlocked: isUnlocked,
-                isCurrent: isCurrent
-            )
+    /// Daily XP earned for each day this week (Mon-Sun), for bar chart.
+    var weeklyXPPerDay: [(label: String, xp: Int)] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: appNow())
+
+        // Find Monday of this week
+        let weekday = calendar.component(.weekday, from: today)
+        let daysFromMonday = (weekday + 5) % 7 // Mon=0, Tue=1, ..., Sun=6
+        guard let monday = calendar.date(byAdding: .day, value: -daysFromMonday, to: today) else { return [] }
+
+        let dayLabels = ["M", "T", "W", "T", "F", "S", "S"]
+
+        return (0..<7).map { offset in
+            guard let day = calendar.date(byAdding: .day, value: offset, to: monday) else {
+                return (label: dayLabels[offset], xp: 0)
+            }
+            let dayStart = calendar.startOfDay(for: day)
+            guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else {
+                return (label: dayLabels[offset], xp: 0)
+            }
+
+            let xp = habits.flatMap { habit in
+                habit.logs.filter { log in
+                    let logDay = calendar.startOfDay(for: log.date)
+                    return logDay >= dayStart && logDay < dayEnd && log.status == .completed
+                }.map { _ in habit.baseXP }
+            }.reduce(0, +)
+
+            return (label: dayLabels[offset], xp: xp)
         }
     }
 
@@ -346,15 +354,3 @@ struct DisplayWeeklyStat: Identifiable {
     var color: Color { statType.color }
 }
 
-struct DisplayRank: Identifiable {
-    let id = UUID()
-    let rank: AuraRank
-    let threshold: Int
-    let isUnlocked: Bool
-    let isCurrent: Bool
-
-    var name: String { rank.name }
-    var tier: String { rank.tier }
-    var icon: String { rank.icon }
-    var color: Color { Color(hex: rank.color) }
-}

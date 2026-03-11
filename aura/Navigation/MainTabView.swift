@@ -103,14 +103,15 @@ struct StatsView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     // ── Level progress ──
+                    let info = manager.levelInfo
                     VStack(spacing: 4) {
-                        Text("LEVEL \(manager.level)")
-                            .font(.system(size: 16, weight: .regular, design: .serif))
-                            .foregroundColor(AppTheme.textMuted)
-                            .tracking(3)
+                        Text(info.displayName)
+                            .font(.system(size: 16, weight: .bold, design: .serif))
+                            .foregroundColor(info.color)
+                            .tracking(2)
 
-                        Text("LEVEL \(manager.level + 1)")
-                            .font(.system(size: 40, weight: .bold, design: .serif))
+                        Text("Level \(info.globalLevel)")
+                            .font(.system(size: 36, weight: .bold, design: .serif))
                             .foregroundColor(.white)
 
                         GeometryReader { geo in
@@ -120,12 +121,12 @@ struct StatsView: View {
                                 Capsule()
                                     .fill(
                                         LinearGradient(
-                                            colors: [AppTheme.barFillStart, AppTheme.barFillEnd],
+                                            colors: [info.color, info.color.opacity(0.6)],
                                             startPoint: .leading, endPoint: .trailing
                                         )
                                     )
                                     .frame(width: animateValues ? geo.size.width * progress : 0, height: 5)
-                                    .shadow(color: AppTheme.barGlow.opacity(0.4), radius: 4)
+                                    .shadow(color: info.color.opacity(0.4), radius: 4)
                             }
                         }
                         .frame(height: 5)
@@ -134,10 +135,18 @@ struct StatsView: View {
 
                         Text("\(manager.currentLevelXP) / \(manager.xpPerLevel) XP")
                             .font(.system(size: 11, weight: .medium, design: .serif))
-                            .foregroundColor(AppTheme.textGold)
+                            .foregroundColor(info.color)
                             .padding(.top, 4)
                     }
                     .padding(.top, 12)
+
+                    // ── Divider ──
+                    Rectangle()
+                        .fill(LinearGradient(colors: [.clear, AppTheme.bgCardBorder, .clear], startPoint: .leading, endPoint: .trailing))
+                        .frame(height: 0.5)
+
+                    // ── Weekly XP Bar Chart ──
+                    WeeklyXPChart(data: manager.weeklyXPPerDay, animate: animateValues)
 
                     // ── Divider ──
                     Rectangle()

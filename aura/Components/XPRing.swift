@@ -1,17 +1,22 @@
 import SwiftUI
 
 struct XPRing: View {
-    let level: Int
+    let levelInfo: LevelInfo
     let currentXP: Int
     let maxXP: Int
 
     @State private var prog: CGFloat = 0
     @State private var pulse = false
+    @State private var badgeScale: CGFloat = 0.5
+    @State private var badgeOpacity: Double = 0
 
     private let dia: CGFloat = 200
     private let sw: CGFloat = 10
 
-    private var target: CGFloat { CGFloat(currentXP) / CGFloat(maxXP) }
+    private var target: CGFloat {
+        guard maxXP > 0 else { return 0 }
+        return CGFloat(currentXP) / CGFloat(maxXP)
+    }
 
     var body: some View {
         ZStack {
@@ -20,8 +25,8 @@ struct XPRing: View {
                 .fill(
                     RadialGradient(
                         colors: [
-                            AppTheme.cloudWarm.opacity(pulse ? 0.12 : 0.06),
-                            AppTheme.cloudWarm.opacity(0.04),
+                            levelInfo.color.opacity(pulse ? 0.12 : 0.06),
+                            levelInfo.color.opacity(0.04),
                             .clear
                         ],
                         center: .center,
@@ -86,7 +91,7 @@ struct XPRing: View {
             Circle()
                 .trim(from: 0, to: prog)
                 .stroke(
-                    AppTheme.ringGlowWide.opacity(0.20),
+                    levelInfo.color.opacity(0.20),
                     style: StrokeStyle(lineWidth: sw + 28, lineCap: .round)
                 )
                 .frame(width: dia, height: dia)
@@ -97,7 +102,7 @@ struct XPRing: View {
             Circle()
                 .trim(from: 0, to: prog)
                 .stroke(
-                    AppTheme.ringGlow.opacity(0.40),
+                    levelInfo.color.opacity(0.40),
                     style: StrokeStyle(lineWidth: sw + 14, lineCap: .round)
                 )
                 .frame(width: dia, height: dia)
@@ -156,32 +161,45 @@ struct XPRing: View {
                 .rotationEffect(.degrees(Double(prog) * 360.0 - 90.0))
                 .opacity(prog > 0.02 ? 1 : 0)
 
-            // ── 12. Center text ──
-            VStack(spacing: 0) {
-                Text("LEVEL")
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundColor(AppTheme.textDim)
-                    .tracking(6)
+            // ── 12. Center: Rank badge + XP ──
+            VStack(spacing: 2) {
+                // Rank badge icon with glow
+                ZStack {
+                    Image(systemName: levelInfo.icon)
+                        .font(.system(size: 48, weight: .semibold))
+                        .foregroundColor(levelInfo.color.opacity(0.15))
+                        .blur(radius: 12)
 
-                Text("\(level)")
-                    .font(.system(size: 58, weight: .thin, design: .serif))
-                    .foregroundColor(AppTheme.textBright)
-                    .shadow(color: .white.opacity(0.08), radius: 12)
-                    .shadow(color: AppTheme.ringGlow.opacity(0.15), radius: 20)
-                    .padding(.top, -6)
-                    .padding(.bottom, -8)
+                    Image(systemName: levelInfo.icon)
+                        .font(.system(size: 42, weight: .semibold))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [levelInfo.color, levelInfo.color.opacity(0.7)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .shadow(color: levelInfo.color.opacity(0.5), radius: 8)
+                }
+                .scaleEffect(badgeScale)
+                .opacity(badgeOpacity)
 
                 Text("\(currentXP) / \(maxXP)")
                     .font(.system(size: 11, weight: .medium, design: .serif))
                     .foregroundColor(AppTheme.textGold)
                     .shadow(color: AppTheme.textGold.opacity(0.3), radius: 4)
                     .tracking(2)
+                    .padding(.top, 2)
             }
         }
         .frame(width: dia + 120, height: dia + 80)
         .onAppear {
             withAnimation(.easeOut(duration: 2.0).delay(0.3)) {
                 prog = target
+            }
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.5)) {
+                badgeScale = 1.0
+                badgeOpacity = 1.0
             }
             withAnimation(.easeInOut(duration: 4).repeatForever(autoreverses: true)) {
                 pulse = true

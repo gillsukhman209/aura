@@ -10,7 +10,6 @@ final class UserProfile {
     // MARK: - XP & Leveling
 
     var totalXP: Int
-    var xpPerLevel: Int
 
     // MARK: - Streak
 
@@ -28,17 +27,17 @@ final class UserProfile {
 
     var createdAt: Date
 
-    // MARK: - Computed
+    // MARK: - Computed (uses new LevelSystem)
 
-    var level: Int { totalXP / xpPerLevel }
+    var levelInfo: LevelInfo { LevelSystem.levelInfo(for: totalXP) }
 
-    var currentLevelXP: Int { totalXP % xpPerLevel }
+    var level: Int { levelInfo.globalLevel }
 
-    var xpToNextLevel: Int { xpPerLevel }
+    var currentLevelXP: Int { levelInfo.currentXP }
 
-    var levelProgress: Double {
-        Double(currentLevelXP) / Double(xpPerLevel)
-    }
+    var xpForCurrentLevel: Int { levelInfo.xpRequired }
+
+    var levelProgress: Double { levelInfo.progress }
 
     var stats: [String: Int] {
         get {
@@ -54,7 +53,6 @@ final class UserProfile {
     init() {
         self.id = UUID()
         self.totalXP = 0
-        self.xpPerLevel = 100
         self.currentStreak = 0
         self.longestStreak = 0
         self.lastCompletedDate = nil
@@ -106,35 +104,4 @@ final class UserProfile {
         }
         return dict
     }()
-}
-
-// MARK: - Rank
-
-extension UserProfile {
-    var rank: AuraRank {
-        AuraRank.forLevel(level)
-    }
-}
-
-// MARK: - Aura Rank
-
-struct AuraRank {
-    let name: String
-    let tier: String
-    let icon: String
-    let color: String
-    let minLevel: Int
-
-    static let ranks: [AuraRank] = [
-        AuraRank(name: "Unranked", tier: "", icon: "circle.dashed", color: "555555", minLevel: 0),
-        AuraRank(name: "Iron", tier: "", icon: "shield.fill", color: "8A8A8A", minLevel: 3),
-        AuraRank(name: "Bronze", tier: "III", icon: "shield.lefthalf.filled", color: "CD7F32", minLevel: 5),
-        AuraRank(name: "Silver", tier: "", icon: "star.fill", color: "C0C0C0", minLevel: 10),
-        AuraRank(name: "Gold", tier: "", icon: "crown.fill", color: "FFD700", minLevel: 20),
-        AuraRank(name: "Diamond", tier: "", icon: "diamond.fill", color: "B9F2FF", minLevel: 35),
-    ]
-
-    static func forLevel(_ level: Int) -> AuraRank {
-        ranks.last { $0.minLevel <= level } ?? ranks[0]
-    }
 }
