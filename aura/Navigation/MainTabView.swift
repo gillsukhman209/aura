@@ -5,8 +5,7 @@ struct MainTabView: View {
 
     private let tabs: [(icon: String, label: String)] = [
         ("house.fill", "Home"),
-        ("chart.bar.fill", "Progress"),
-        ("person.text.rectangle", "Stats"),
+        ("chart.bar.fill", "Stats"),
         ("diamond.fill", "Rank"),
         ("person.fill", "Profile"),
     ]
@@ -17,10 +16,9 @@ struct MainTabView: View {
             Group {
                 switch selectedTab {
                 case 0: CharacterView()
-                case 1: WeeklyProgressView()
-                case 2: CharacterStatsView()
-                case 3: RankView()
-                case 4: NavigationStack { MoreView() }
+                case 1: StatsView()
+                case 2: RankView()
+                case 3: NavigationStack { MoreView() }
                 default: CharacterView()
                 }
             }
@@ -91,9 +89,10 @@ struct MainTabView: View {
     }
 }
 
-// MARK: - Character Stats (moved from home to its own tab)
-struct CharacterStatsView: View {
+// MARK: - Combined Stats View (Progress + Character Stats)
+struct StatsView: View {
     @Environment(HabitManager.self) private var manager
+    @State private var animateValues = false
 
     private var stats: [DisplayStat] { manager.characterStats }
 
@@ -101,105 +100,192 @@ struct CharacterStatsView: View {
         ZStack {
             StarfieldBackground(starCount: 200)
 
-            VStack(spacing: 0) {
-                HStack {
-                    Text("Aura")
-                        .font(.custom("Georgia-Bold", size: 22))
-                        .foregroundColor(AppTheme.textBright)
-                        .shadow(color: AppTheme.ringGlow.opacity(0.3), radius: 8)
-                    Spacer()
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 20) {
+                    // ── Level progress ──
+                    VStack(spacing: 4) {
+                        Text("LEVEL \(manager.level)")
+                            .font(.system(size: 16, weight: .regular, design: .serif))
+                            .foregroundColor(AppTheme.textMuted)
+                            .tracking(3)
 
-                // ── Header ──
-                HStack(spacing: 6) {
-                    HStack(spacing: 0) {
-                        Spacer()
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.clear, AppTheme.headerLine.opacity(0.5)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(height: 0.5)
-                        Diamond()
-                            .fill(AppTheme.headerDiamond)
-                            .frame(width: 3.5, height: 3.5)
+                        Text("LEVEL \(manager.level + 1)")
+                            .font(.system(size: 40, weight: .bold, design: .serif))
+                            .foregroundColor(.white)
+
+                        GeometryReader { geo in
+                            let progress = CGFloat(manager.currentLevelXP) / CGFloat(max(1, manager.xpPerLevel))
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(AppTheme.barGroove).frame(height: 5)
+                                Capsule()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [AppTheme.barFillStart, AppTheme.barFillEnd],
+                                            startPoint: .leading, endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: animateValues ? geo.size.width * progress : 0, height: 5)
+                                    .shadow(color: AppTheme.barGlow.opacity(0.4), radius: 4)
+                            }
+                        }
+                        .frame(height: 5)
+                        .padding(.horizontal, 40)
+                        .padding(.top, 8)
+
+                        Text("\(manager.currentLevelXP) / \(manager.xpPerLevel) XP")
+                            .font(.system(size: 11, weight: .medium, design: .serif))
+                            .foregroundColor(AppTheme.textGold)
+                            .padding(.top, 4)
                     }
+                    .padding(.top, 12)
 
-                    Text("Character Stats")
-                        .font(.custom("Georgia-Italic", size: 14))
-                        .foregroundColor(AppTheme.textMuted)
-                        .fixedSize()
+                    // ── Divider ──
+                    Rectangle()
+                        .fill(LinearGradient(colors: [.clear, AppTheme.bgCardBorder, .clear], startPoint: .leading, endPoint: .trailing))
+                        .frame(height: 0.5)
 
-                    HStack(spacing: 0) {
-                        Diamond()
-                            .fill(AppTheme.headerDiamond)
-                            .frame(width: 3.5, height: 3.5)
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [AppTheme.headerLine.opacity(0.5), .clear],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
+                    // ── Character Stats header ──
+                    HStack(spacing: 6) {
+                        HStack(spacing: 0) {
+                            Spacer()
+                            Rectangle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.clear, AppTheme.headerLine.opacity(0.5)],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
                                 )
-                            )
-                            .frame(height: 0.5)
-                        Spacer()
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 8)
+                                .frame(height: 0.5)
+                            Diamond()
+                                .fill(AppTheme.headerDiamond)
+                                .frame(width: 3.5, height: 3.5)
+                        }
 
-                // ── Stats panel ──
-                VStack(spacing: 0) {
-                    ForEach(Array(stats.enumerated()), id: \.element.id) { i, stat in
-                        StatBar(stat: stat, isLast: i == stats.count - 1)
-                        if i < stats.count - 1 {
-                            Spacer(minLength: 0)
+                        Text("Character Stats")
+                            .font(.custom("Georgia-Italic", size: 14))
+                            .foregroundColor(AppTheme.textMuted)
+                            .fixedSize()
+
+                        HStack(spacing: 0) {
+                            Diamond()
+                                .fill(AppTheme.headerDiamond)
+                                .frame(width: 3.5, height: 3.5)
+                            Rectangle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [AppTheme.headerLine.opacity(0.5), .clear],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .frame(height: 0.5)
+                            Spacer()
                         }
                     }
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    AppTheme.bgCard.opacity(0.65),
-                                    AppTheme.bgCard.opacity(0.55),
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(
-                                    LinearGradient(
-                                        colors: [
-                                            AppTheme.bgCardBorder.opacity(0.4),
-                                            AppTheme.bgCardBorder.opacity(0.2),
-                                            AppTheme.bgCardBorder.opacity(0.3),
-                                        ],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    ),
-                                    lineWidth: 0.5
-                                )
-                        )
-                        .shadow(color: Color.black.opacity(0.5), radius: 12, y: 4)
-                )
-                .padding(.horizontal, 10)
+                    .padding(.horizontal, 20)
 
-                Spacer()
-                    .frame(height: 62)
+                    // ── Stats panel ──
+                    VStack(spacing: 0) {
+                        ForEach(Array(stats.enumerated()), id: \.element.id) { i, stat in
+                            StatBar(stat: stat, isLast: i == stats.count - 1)
+                            if i < stats.count - 1 {
+                                Spacer(minLength: 0)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        AppTheme.bgCard.opacity(0.65),
+                                        AppTheme.bgCard.opacity(0.55),
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(
+                                        LinearGradient(
+                                            colors: [
+                                                AppTheme.bgCardBorder.opacity(0.4),
+                                                AppTheme.bgCardBorder.opacity(0.2),
+                                                AppTheme.bgCardBorder.opacity(0.3),
+                                            ],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        ),
+                                        lineWidth: 0.5
+                                    )
+                            )
+                            .shadow(color: Color.black.opacity(0.5), radius: 12, y: 4)
+                    )
+                    .padding(.horizontal, 10)
+
+                    // ── Divider ──
+                    Rectangle()
+                        .fill(LinearGradient(colors: [.clear, AppTheme.bgCardBorder, .clear], startPoint: .leading, endPoint: .trailing))
+                        .frame(height: 0.5)
+
+                    // ── Weekly XP Progress ──
+                    HStack {
+                        Text("XP GAINED THIS WEEK")
+                            .font(.system(size: 11, weight: .medium, design: .serif))
+                            .foregroundColor(AppTheme.textMuted)
+                            .tracking(2)
+                        Circle().fill(AppTheme.accentDanger).frame(width: 5, height: 5)
+                    }
+
+                    let progress = manager.weeklyProgress
+                    if progress.isEmpty {
+                        Text("Complete habits to see weekly progress")
+                            .font(.system(size: 13, design: .serif))
+                            .foregroundColor(AppTheme.textSubtle)
+                            .padding(.top, 4)
+                    } else {
+                        VStack(spacing: 10) {
+                            ForEach(progress) { stat in
+                                HStack(spacing: 12) {
+                                    Image(systemName: stat.icon)
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(stat.color)
+                                        .frame(width: 24)
+                                    Text(stat.name)
+                                        .font(.system(size: 15, weight: .medium, design: .serif))
+                                        .foregroundColor(.white)
+                                    Spacer()
+                                    Text("+\(animateValues ? stat.xpGained : 0)")
+                                        .font(.system(size: 16, weight: .bold, design: .serif))
+                                        .foregroundColor(AppTheme.gold)
+                                        .contentTransition(.numericText())
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 14)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 14)
+                                        .fill(AppTheme.bgCard)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 14)
+                                                .stroke(AppTheme.bgCardBorder.opacity(0.3), lineWidth: 0.5)
+                                        )
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 10)
+                    }
+
+                    Spacer().frame(height: 100)
+                }
+                .padding(.horizontal, 10)
             }
+        }
+        .onAppear {
+            withAnimation(.easeOut(duration: 1.0).delay(0.3)) { animateValues = true }
         }
     }
 }
@@ -218,9 +304,6 @@ struct MoreView: View {
                         .tracking(2)
                         .padding(.top, 14)
 
-                    NavigationLink(destination: TrainingView()) {
-                        ProfileMenuItem(icon: "flame.fill", title: "Training", color: AppTheme.accentOrange)
-                    }
                     NavigationLink(destination: StreakView()) {
                         ProfileMenuItem(icon: "bolt.fill", title: "Streak", color: AppTheme.goldBright)
                     }

@@ -20,6 +20,33 @@ struct CharacterView: View {
                         .shadow(color: AppTheme.ringGlow.opacity(0.3), radius: 8)
                     Spacer()
 
+                    // ── Streak badge ──
+                    if manager.currentStreak > 0 {
+                        HStack(spacing: 4) {
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [Color(hex: "FF4500"), AppTheme.accentOrange],
+                                        startPoint: .bottom, endPoint: .top
+                                    )
+                                )
+                            Text("\(manager.currentStreak)")
+                                .font(.system(size: 14, weight: .bold, design: .serif))
+                                .foregroundColor(AppTheme.accentOrange)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(AppTheme.accentOrange.opacity(0.1))
+                                .overlay(
+                                    Capsule()
+                                        .stroke(AppTheme.accentOrange.opacity(0.2), lineWidth: 0.5)
+                                )
+                        )
+                    }
+
                     Button { showCreateHabit = true } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 20))
