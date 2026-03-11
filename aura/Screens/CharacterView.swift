@@ -4,13 +4,15 @@ struct CharacterView: View {
     @Environment(HabitManager.self) private var manager
     @State private var showBonus = false
     @State private var bonusProgress: CGFloat = 0
+    @State private var showCreateHabit = false
+    @State private var showManageHabits = false
 
     var body: some View {
         ZStack {
             StarfieldBackground(starCount: 250)
 
             VStack(spacing: 0) {
-                // ── App name top-left + debug button ──
+                // ── App name + actions ──
                 HStack {
                     Text("Aura")
                         .font(.custom("Georgia-Bold", size: 22))
@@ -18,31 +20,7 @@ struct CharacterView: View {
                         .shadow(color: AppTheme.ringGlow.opacity(0.3), radius: 8)
                     Spacer()
 
-                    // DEBUG: Remove after testing Phase 2
-                    Menu {
-                        Button("+ Gym (Build/Major/Strength)") {
-                            manager.createHabit(name: "Gym", type: .build, icon: "dumbbell.fill", difficulty: .major, stat: .strength)
-                        }
-                        Button("+ Read (Build/Medium/Knowledge)") {
-                            manager.createHabit(name: "Read 30 min", type: .build, icon: "book.fill", difficulty: .medium, stat: .knowledge)
-                        }
-                        Button("+ Meditate (Build/Minor/Focus)") {
-                            manager.createHabit(name: "Meditate", type: .build, icon: "brain.head.profile.fill", difficulty: .minor, stat: .focus)
-                        }
-                        Button("+ No Junk Food (Quit/Medium/Discipline)") {
-                            manager.createHabit(name: "No Junk Food", type: .quit, icon: "xmark.circle.fill", difficulty: .medium, stat: .discipline)
-                        }
-                        Button("+ Drink Water (Numeric/Minor/Energy)") {
-                            manager.createHabit(name: "Drink Water", type: .numeric, icon: "drop.fill", difficulty: .minor, stat: .energy, targetValue: 3.0, unit: "L")
-                        }
-                        Divider()
-                        Button("Reset All Data", role: .destructive) {
-                            for habit in manager.habits {
-                                manager.deleteHabit(habit)
-                            }
-                            manager.refresh()
-                        }
-                    } label: {
+                    Button { showCreateHabit = true } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 20))
                             .foregroundColor(AppTheme.gold)
@@ -109,6 +87,19 @@ struct CharacterView: View {
                             ForEach(manager.todaysHabits) { habit in
                                 HabitCard(habit: habit)
                             }
+
+                            // Manage Habits link
+                            Button { showManageHabits = true } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "slider.horizontal.3")
+                                        .font(.system(size: 11, weight: .medium))
+                                    Text("Manage Habits")
+                                        .font(.system(size: 12, weight: .medium, design: .serif))
+                                }
+                                .foregroundColor(AppTheme.textMuted)
+                                .padding(.top, 4)
+                            }
+                            .buttonStyle(.plain)
                         } else {
                             VStack(spacing: 12) {
                                 Image(systemName: "plus.circle.dashed")
@@ -117,9 +108,18 @@ struct CharacterView: View {
                                 Text("No habits yet")
                                     .font(.custom("Georgia", size: 14))
                                     .foregroundColor(AppTheme.textMuted)
-                                Text("Create your first habit to start leveling up")
-                                    .font(.system(size: 12, design: .serif))
-                                    .foregroundColor(AppTheme.textSubtle)
+                                Button { showCreateHabit = true } label: {
+                                    Text("Create your first habit")
+                                        .font(.system(size: 13, weight: .medium, design: .serif))
+                                        .foregroundColor(AppTheme.tabActive)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(AppTheme.tabActive.opacity(0.1))
+                                        )
+                                }
+                                .buttonStyle(.plain)
                             }
                             .padding(.top, 30)
                         }
@@ -166,6 +166,12 @@ struct CharacterView: View {
             manager.refresh()
             withAnimation(.easeOut(duration: 1.2).delay(0.5)) { bonusProgress = 1.0 }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(1.2)) { showBonus = true }
+        }
+        .sheet(isPresented: $showCreateHabit) {
+            CreateHabitView()
+        }
+        .fullScreenCover(isPresented: $showManageHabits) {
+            HabitListView()
         }
     }
 }
