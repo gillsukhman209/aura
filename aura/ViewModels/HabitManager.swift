@@ -384,6 +384,19 @@ final class HabitManager {
         }
     }
 
+    // MARK: - Debug
+
+    func debugAddXP(_ amount: Int) {
+        let oldLevel = levelInfo.globalLevel
+        profile?.addXP(amount)
+        syncProfileState()
+        save()
+        if levelInfo.globalLevel > oldLevel {
+            celebrationLevelInfo = levelInfo
+            showLevelUpCelebration = true
+        }
+    }
+
     // MARK: - Persistence
 
     private func save() {

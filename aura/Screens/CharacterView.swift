@@ -325,6 +325,18 @@ struct DebugDatePanel: View {
                 }
                 .buttonStyle(.plain)
             }
+
+            Button {
+                manager.debugAddXP(500)
+            } label: {
+                Text("+500 AP")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(AppTheme.accentGreen)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(RoundedRectangle(cornerRadius: 6).fill(AppTheme.accentGreen.opacity(0.1)))
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
