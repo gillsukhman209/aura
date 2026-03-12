@@ -51,15 +51,10 @@ struct LevelRoadmapView: View {
                             )
                             .frame(width: 100, height: 100)
 
-                        Image(systemName: info.icon)
-                            .font(.system(size: 40, weight: .semibold))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [info.color, info.color.opacity(0.7)],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
+                        Image(info.imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 72, height: 72)
                             .shadow(color: info.color.opacity(0.5), radius: 8)
                     }
 
@@ -116,18 +111,13 @@ struct RoadmapRow: View {
             ZStack {
                 Circle()
                     .fill(level.tier.color.opacity(level.isCompleted || level.isCurrent ? 0.12 : 0.04))
-                    .frame(width: 44, height: 44)
+                    .frame(width: 50, height: 50)
 
                 if level.isCompleted || level.isCurrent {
-                    Image(systemName: level.tier.icon)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [level.tier.color, level.tier.color.opacity(0.7)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
+                    Image(level.tier.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 38, height: 38)
                 } else {
                     Image(systemName: "lock.fill")
                         .font(.system(size: 13))

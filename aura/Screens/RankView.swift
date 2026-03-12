@@ -37,15 +37,10 @@ struct RankView: View {
                                 )
                                 .frame(width: 120, height: 120)
 
-                            Image(systemName: info.icon)
-                                .font(.system(size: 50, weight: .semibold))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [info.color, info.color.opacity(0.7)],
-                                        startPoint: .top,
-                                        endPoint: .bottom
-                                    )
-                                )
+                            Image(info.imageName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 90, height: 90)
                                 .shadow(color: info.color.opacity(0.5), radius: 10)
                         }
 
@@ -138,11 +133,12 @@ struct RankView: View {
                                 ZStack {
                                     Circle()
                                         .fill(tier.color.opacity(isUnlocked ? 0.12 : 0.04))
-                                        .frame(width: 40, height: 40)
+                                        .frame(width: 48, height: 48)
                                     if isUnlocked {
-                                        Image(systemName: tier.icon)
-                                            .font(.system(size: 16, weight: .semibold))
-                                            .foregroundColor(tier.color)
+                                        Image(tier.imageName)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 36, height: 36)
                                     } else {
                                         Image(systemName: "lock.fill")
                                             .font(.system(size: 13))

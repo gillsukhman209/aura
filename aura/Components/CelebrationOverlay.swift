@@ -54,15 +54,10 @@ struct LevelUpOverlay: View {
                             )
                             .frame(width: 130, height: 130)
 
-                        Image(systemName: levelInfo.icon)
-                            .font(.system(size: 56, weight: .semibold))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [levelInfo.color, levelInfo.color.opacity(0.7)],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
+                        Image(levelInfo.imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
                             .shadow(color: levelInfo.color.opacity(0.6), radius: 15)
                     }
                     .scaleEffect(scale)

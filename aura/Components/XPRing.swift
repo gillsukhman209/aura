@@ -10,8 +10,8 @@ struct XPRing: View {
     @State private var badgeScale: CGFloat = 0.5
     @State private var badgeOpacity: Double = 0
 
-    private let dia: CGFloat = 200
-    private let sw: CGFloat = 10
+    private let dia: CGFloat = 270
+    private let sw: CGFloat = 11
 
     private var target: CGFloat {
         guard maxXP > 0 else { return 0 }
@@ -162,37 +162,35 @@ struct XPRing: View {
                 .opacity(prog > 0.02 ? 1 : 0)
 
             // ── 12. Center: Rank badge + XP ──
-            VStack(spacing: 2) {
+            ZStack {
                 // Rank badge icon with glow
                 ZStack {
-                    Image(systemName: levelInfo.icon)
-                        .font(.system(size: 48, weight: .semibold))
-                        .foregroundColor(levelInfo.color.opacity(0.15))
-                        .blur(radius: 12)
+                    Image(levelInfo.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 260, height: 260)
+                        .blur(radius: 20)
+                        .opacity(0.3)
 
-                    Image(systemName: levelInfo.icon)
-                        .font(.system(size: 42, weight: .semibold))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [levelInfo.color, levelInfo.color.opacity(0.7)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .shadow(color: levelInfo.color.opacity(0.5), radius: 8)
+                    Image(levelInfo.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 250, height: 250)
+                        .shadow(color: levelInfo.color.opacity(0.5), radius: 12)
                 }
                 .scaleEffect(badgeScale)
                 .opacity(badgeOpacity)
 
+                // AP text pinned to bottom inside the ring
                 Text("\(currentXP) / \(maxXP) AP")
                     .font(.system(size: 11, weight: .medium, design: .serif))
                     .foregroundColor(AppTheme.textGold)
                     .shadow(color: AppTheme.textGold.opacity(0.3), radius: 4)
                     .tracking(2)
-                    .padding(.top, 2)
+                    .offset(y: dia / 2 - 34)
             }
         }
-        .frame(width: dia + 120, height: dia + 80)
+        .frame(width: dia + 120, height: dia + 100)
         .onAppear {
             withAnimation(.easeOut(duration: 2.0).delay(0.3)) {
                 prog = target

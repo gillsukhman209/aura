@@ -88,15 +88,10 @@ struct AuraCheckView: View {
                     )
                     .frame(width: 110, height: 110)
 
-                Image(systemName: info.icon)
-                    .font(.system(size: 44, weight: .semibold))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [info.color, info.color.opacity(0.7)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                Image(info.imageName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
                     .shadow(color: info.color.opacity(0.5), radius: 10)
             }
 

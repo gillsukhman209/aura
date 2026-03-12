@@ -38,6 +38,20 @@ enum RankTier: Int, CaseIterable {
         }
     }
 
+    /// Asset catalog image name for the custom rank badge.
+    var imageName: String {
+        switch self {
+        case .wood: "wood_rank"
+        case .bronze: "bronze_rank"
+        case .silver: "silver_rank"
+        case .gold: "gold_rank"
+        case .platinum: "platinum_rank"
+        case .diamond: "diamond_rank"
+        case .titan: "titan_rank"
+        case .olympian: "olympian_rank"
+        }
+    }
+
     var color: Color {
         switch self {
         case .wood: Color(hex: "8B6914")
@@ -70,6 +84,7 @@ struct LevelInfo: Equatable {
     }
 
     var icon: String { tier.icon }
+    var imageName: String { tier.imageName }
     var color: Color { tier.color }
 
     var progress: Double {
