@@ -24,7 +24,6 @@ final class HabitManager {
         fetchProfile()
         fetchHabits()
         syncProfileState()
-        dailyBonusAwarded = false
     }
 
     private func fetchProfile() {
@@ -308,28 +307,63 @@ final class HabitManager {
 
     // MARK: - XP Engine
 
-    /// Whether the daily completion bonus has been awarded today.
-    private(set) var dailyBonusAwarded: Bool = false
+    /// Date the daily completion bonus was last awarded.
+    private var lastBonusDate: Date?
+
+    /// Whether the daily bonus has already been awarded today.
+    var dailyBonusAwarded: Bool {
+        guard let lastBonusDate else { return false }
+        return Calendar.current.isDate(lastBonusDate, inSameDayAs: appNow())
+    }
+
+    /// Tracks the previous level for level-up detection.
+    private(set) var previousLevel: Int = 0
+
+    /// Set to true when a level-up just occurred — UI reads this to show celebration.
+    private(set) var showLevelUpCelebration: Bool = false
+    private(set) var celebrationLevelInfo: LevelInfo?
+
+    func dismissLevelUp() {
+        showLevelUpCelebration = false
+        celebrationLevelInfo = nil
+    }
+
+    /// Set to true when aura is lost — UI reads this to show negative feedback.
+    private(set) var showAuraLost: Bool = false
+    private(set) var auraLostAmount: Int = 0
+
+    func dismissAuraLost() {
+        showAuraLost = false
+        auraLostAmount = 0
+    }
 
     private func awardXP(for habit: Habit) {
+        let oldLevel = levelInfo.globalLevel
         profile?.addXP(habit.baseXP)
         profile?.addStatXP(habit.statXP, to: habit.stat)
         syncProfileState()
         checkDailyCompletionBonus()
+
+        // Check for level-up
+        if levelInfo.globalLevel > oldLevel {
+            celebrationLevelInfo = levelInfo
+            showLevelUpCelebration = true
+        }
     }
 
     /// Award +40 AP bonus when all today's habits are completed (once per day).
     private func checkDailyCompletionBonus() {
         guard !dailyBonusAwarded, allTodayCompleted else { return }
+        let oldLevel = levelInfo.globalLevel
         profile?.addXP(40)
-        dailyBonusAwarded = true
+        lastBonusDate = appNow()
         syncProfileState()
         save()
-    }
 
-    /// Reset the daily bonus flag (called on day change).
-    func resetDailyBonus() {
-        dailyBonusAwarded = false
+        if levelInfo.globalLevel > oldLevel {
+            celebrationLevelInfo = levelInfo
+            showLevelUpCelebration = true
+        }
     }
 
     // MARK: - Day Reset
@@ -337,9 +371,17 @@ final class HabitManager {
     /// Run day-reset evaluation on app foreground. Safe to call multiple times.
     func performDayReset() {
         guard let profile else { return }
+        let xpBefore = profile.totalXP
         let service = DayResetService(modelContext: modelContext)
         service.evaluateIfNeeded(profile: profile, habits: habits)
-        refresh() // refresh already calls syncProfileState()
+        let xpAfter = profile.totalXP
+        refresh()
+
+        // Detect aura loss from penalties
+        if xpAfter < xpBefore {
+            auraLostAmount = xpBefore - xpAfter
+            showAuraLost = true
+        }
     }
 
     // MARK: - Persistence

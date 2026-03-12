@@ -6,10 +6,16 @@ struct CharacterView: View {
     @State private var bonusProgress: CGFloat = 0
     @State private var showCreateHabit = false
     @State private var showManageHabits = false
+    @State private var showDailyBonusOverlay = false
+    @State private var wasBonusAwarded = false
+    @State private var auraGlowIntensity: CGFloat = 0
 
     var body: some View {
         ZStack {
             StarfieldBackground(starCount: 250)
+
+            // ── Aura Glow: ambient energy behind content ──
+            AuraGlowBackground(levelInfo: manager.levelInfo, intensity: auraGlowIntensity)
 
             VStack(spacing: 0) {
                 // ── App name + actions ──
@@ -204,8 +210,19 @@ struct CharacterView: View {
         }
         .onAppear {
             manager.refresh()
+            wasBonusAwarded = manager.dailyBonusAwarded
             withAnimation(.easeOut(duration: 1.2).delay(0.5)) { bonusProgress = 1.0 }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(1.2)) { showBonus = true }
+            withAnimation(.easeOut(duration: 1.5)) { auraGlowIntensity = 1.0 }
+        }
+        .onChange(of: manager.dailyBonusAwarded) { oldVal, newVal in
+            if !wasBonusAwarded && newVal {
+                showDailyBonusOverlay = true
+                wasBonusAwarded = true
+            } else if !newVal {
+                // New day — reset so the overlay can fire again
+                wasBonusAwarded = false
+            }
         }
         .sheet(isPresented: $showCreateHabit) {
             CreateHabitView()
@@ -215,6 +232,29 @@ struct CharacterView: View {
         }
         .safeAreaInset(edge: .bottom) {
             DebugDatePanel(manager: manager)
+        }
+
+        // ── Celebration overlays ──
+        .overlay {
+            if manager.showLevelUpCelebration, let info = manager.celebrationLevelInfo {
+                LevelUpOverlay(levelInfo: info) {
+                    manager.dismissLevelUp()
+                }
+            }
+        }
+        .overlay {
+            if showDailyBonusOverlay {
+                DailyBonusOverlay {
+                    showDailyBonusOverlay = false
+                }
+            }
+        }
+        .overlay {
+            if manager.showAuraLost {
+                AuraLostOverlay(amount: manager.auraLostAmount) {
+                    manager.dismissAuraLost()
+                }
+            }
         }
     }
 }
