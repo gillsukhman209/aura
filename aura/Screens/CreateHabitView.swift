@@ -41,7 +41,7 @@ struct CreateHabitView: View {
 
     var body: some View {
         ZStack {
-            AppTheme.bgPure.ignoresSafeArea()
+            Color(hex: "050505").ignoresSafeArea()
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
@@ -50,16 +50,16 @@ struct CreateHabitView: View {
                         Button { dismiss() } label: {
                             Image(systemName: "xmark")
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(AppTheme.textMuted)
+                                .foregroundColor(Color(hex: "888888"))
                                 .frame(width: 32, height: 32)
-                                .background(Circle().fill(AppTheme.bgCard))
+                                .background(Circle().fill(Color(hex: "111111")))
                         }
                         Spacer()
-                        Text("New Habit")
-                            .font(.custom("Georgia-Bold", size: 18))
-                            .foregroundColor(AppTheme.textBright)
+                        Text("NEW HABIT")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(Color(hex: "F0F0F0"))
+                            .tracking(2)
                         Spacer()
-                        // Balance spacer
                         Color.clear.frame(width: 32, height: 32)
                     }
                     .padding(.top, 8)
@@ -69,7 +69,7 @@ struct CreateHabitView: View {
                         Button { showIconPicker = true } label: {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 14)
-                                    .fill(AppTheme.bgCard)
+                                    .fill(Color(hex: "111111"))
                                     .frame(width: 60, height: 60)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 14)
@@ -83,15 +83,15 @@ struct CreateHabitView: View {
                         .buttonStyle(.plain)
 
                         TextField("Habit name", text: $name)
-                            .font(.system(size: 17, weight: .medium, design: .serif))
-                            .foregroundColor(AppTheme.textBright)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundColor(Color(hex: "F0F0F0"))
                             .padding(14)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(AppTheme.bgCard)
+                                    .fill(Color(hex: "111111"))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12)
-                                            .stroke(AppTheme.bgCardBorder, lineWidth: 0.5)
+                                            .stroke(Color(hex: "1E1E1E"), lineWidth: 0.5)
                                     )
                             )
                     }
@@ -104,14 +104,14 @@ struct CreateHabitView: View {
                                     label: t.label,
                                     icon: t.icon,
                                     selected: type == t,
-                                    color: type == t ? AppTheme.tabActive : AppTheme.textMuted
+                                    color: type == t ? .white : Color(hex: "666666")
                                 ) { type = t }
                             }
                         }
 
                         Text(type.description)
-                            .font(.system(size: 11, design: .serif))
-                            .foregroundColor(AppTheme.textSubtle)
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(Color(hex: "444444"))
                             .padding(.top, 2)
                     }
 
@@ -121,22 +121,22 @@ struct CreateHabitView: View {
                             HStack(spacing: 10) {
                                 TextField("Value", text: $targetValue)
                                     .keyboardType(.decimalPad)
-                                    .font(.system(size: 15, weight: .medium, design: .serif))
-                                    .foregroundColor(AppTheme.textBright)
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundColor(Color(hex: "F0F0F0"))
                                     .padding(12)
                                     .background(
                                         RoundedRectangle(cornerRadius: 10)
-                                            .fill(AppTheme.bgPure)
+                                            .fill(Color(hex: "050505"))
                                     )
                                     .frame(width: 100)
 
                                 TextField("Unit (L, min, km...)", text: $unit)
-                                    .font(.system(size: 15, weight: .medium, design: .serif))
-                                    .foregroundColor(AppTheme.textBright)
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundColor(Color(hex: "F0F0F0"))
                                     .padding(12)
                                     .background(
                                         RoundedRectangle(cornerRadius: 10)
-                                            .fill(AppTheme.bgPure)
+                                            .fill(Color(hex: "050505"))
                                     )
                             }
                         }
@@ -150,7 +150,7 @@ struct CreateHabitView: View {
                                     label: "\(d.label) (+\(d.baseXP) AP)",
                                     icon: nil,
                                     selected: difficulty == d,
-                                    color: difficulty == d ? d.color : AppTheme.textMuted
+                                    color: difficulty == d ? d.color : Color(hex: "666666")
                                 ) { difficulty = d }
                             }
                         }
@@ -169,8 +169,8 @@ struct CreateHabitView: View {
                                             .foregroundColor(s.color)
                                             .frame(width: 20)
                                         Text(s.label)
-                                            .font(.system(size: 14, weight: .medium, design: .serif))
-                                            .foregroundColor(stat == s ? AppTheme.textBright : AppTheme.textMuted)
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundColor(stat == s ? Color(hex: "F0F0F0") : Color(hex: "666666"))
                                         Spacer()
                                         if stat == s {
                                             Image(systemName: "checkmark.circle.fill")
@@ -193,7 +193,7 @@ struct CreateHabitView: View {
                                     label: s.rawValue,
                                     icon: nil,
                                     selected: scheduleType == s,
-                                    color: scheduleType == s ? AppTheme.tabActive : AppTheme.textMuted
+                                    color: scheduleType == s ? .white : Color(hex: "666666")
                                 ) { scheduleType = s }
                             }
                         }
@@ -207,12 +207,12 @@ struct CreateHabitView: View {
                                         else { selectedDays.insert(day) }
                                     } label: {
                                         Text(String(day.shortLabel.prefix(2)))
-                                            .font(.system(size: 11, weight: .semibold))
-                                            .foregroundColor(isSelected ? .white : AppTheme.textMuted)
+                                            .font(.system(size: 11, weight: .bold))
+                                            .foregroundColor(isSelected ? .white : Color(hex: "555555"))
                                             .frame(width: 34, height: 34)
                                             .background(
                                                 Circle()
-                                                    .fill(isSelected ? AppTheme.tabActive.opacity(0.3) : AppTheme.bgPure)
+                                                    .fill(isSelected ? Color.white.opacity(0.2) : Color(hex: "050505"))
                                             )
                                     }
                                     .buttonStyle(.plain)
@@ -224,8 +224,8 @@ struct CreateHabitView: View {
                         if scheduleType == .timesPerWeek {
                             HStack {
                                 Text("Times per week:")
-                                    .font(.system(size: 13, design: .serif))
-                                    .foregroundColor(AppTheme.textMuted)
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundColor(Color(hex: "666666"))
                                 Spacer()
                                 HStack(spacing: 12) {
                                     Button {
@@ -233,13 +233,13 @@ struct CreateHabitView: View {
                                     } label: {
                                         Image(systemName: "minus.circle.fill")
                                             .font(.system(size: 22))
-                                            .foregroundColor(AppTheme.textMuted)
+                                            .foregroundColor(Color(hex: "555555"))
                                     }
                                     .buttonStyle(.plain)
 
                                     Text("\(timesPerWeek)")
-                                        .font(.system(size: 18, weight: .bold, design: .serif))
-                                        .foregroundColor(AppTheme.textBright)
+                                        .font(.system(size: 18, weight: .black))
+                                        .foregroundColor(Color(hex: "F0F0F0"))
                                         .frame(width: 30)
 
                                     Button {
@@ -247,7 +247,7 @@ struct CreateHabitView: View {
                                     } label: {
                                         Image(systemName: "plus.circle.fill")
                                             .font(.system(size: 22))
-                                            .foregroundColor(AppTheme.tabActive)
+                                            .foregroundColor(.white)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -270,14 +270,15 @@ struct CreateHabitView: View {
                         )
                         dismiss()
                     } label: {
-                        Text("Create Habit")
-                            .font(.system(size: 16, weight: .bold, design: .serif))
-                            .foregroundColor(canSave ? .white : AppTheme.textSubtle)
+                        Text("CREATE HABIT")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(canSave ? .white : Color(hex: "444444"))
+                            .tracking(2)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
                             .background(
                                 RoundedRectangle(cornerRadius: 14)
-                                    .fill(canSave ? AppTheme.tabActive : AppTheme.bgCard)
+                                    .fill(canSave ? Color.white.opacity(0.15) : Color(hex: "0A0A0A"))
                             )
                     }
                     .disabled(!canSave)
@@ -299,8 +300,8 @@ struct CreateHabitView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title.uppercased())
                 .font(.system(size: 10, weight: .bold))
-                .foregroundColor(AppTheme.textSubtle)
-                .tracking(1.5)
+                .foregroundColor(Color(hex: "555555"))
+                .tracking(2)
 
             content()
         }
@@ -308,10 +309,10 @@ struct CreateHabitView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(AppTheme.bgCard)
+                .fill(Color(hex: "0A0A0A"))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
                 )
         )
     }
@@ -326,17 +327,17 @@ struct CreateHabitView: View {
                         .font(.system(size: 10))
                 }
                 Text(label)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 11, weight: .bold))
             }
             .foregroundColor(color)
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(selected ? color.opacity(0.12) : AppTheme.bgPure)
+                    .fill(selected ? color.opacity(0.12) : Color(hex: "050505"))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(selected ? color.opacity(0.3) : AppTheme.bgCardBorder, lineWidth: 0.5)
+                            .stroke(selected ? color.opacity(0.3) : Color(hex: "1E1E1E"), lineWidth: 0.5)
                     )
             )
         }
@@ -361,18 +362,19 @@ struct IconPickerView: View {
 
     var body: some View {
         ZStack {
-            AppTheme.bgPure.ignoresSafeArea()
+            Color(hex: "050505").ignoresSafeArea()
 
             VStack(spacing: 0) {
                 HStack {
-                    Text("Choose Icon")
-                        .font(.custom("Georgia-Bold", size: 18))
-                        .foregroundColor(AppTheme.textBright)
+                    Text("CHOOSE ICON")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(Color(hex: "F0F0F0"))
+                        .tracking(2)
                     Spacer()
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 22))
-                            .foregroundColor(AppTheme.textMuted)
+                            .foregroundColor(Color(hex: "555555"))
                     }
                 }
                 .padding(.horizontal, 16)
@@ -385,8 +387,8 @@ struct IconPickerView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(category.uppercased())
                                     .font(.system(size: 10, weight: .bold))
-                                    .foregroundColor(AppTheme.textSubtle)
-                                    .tracking(1.5)
+                                    .foregroundColor(Color(hex: "555555"))
+                                    .tracking(2)
 
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 5), spacing: 10) {
                                     ForEach(categoryIcons, id: \.self) { iconName in
@@ -397,18 +399,18 @@ struct IconPickerView: View {
                                         } label: {
                                             ZStack {
                                                 RoundedRectangle(cornerRadius: 12)
-                                                    .fill(isSelected ? AppTheme.tabActive.opacity(0.15) : AppTheme.bgCard)
+                                                    .fill(isSelected ? Color.white.opacity(0.12) : Color(hex: "0A0A0A"))
                                                     .frame(height: 52)
                                                     .overlay(
                                                         RoundedRectangle(cornerRadius: 12)
                                                             .stroke(
-                                                                isSelected ? AppTheme.tabActive.opacity(0.4) : AppTheme.bgCardBorder.opacity(0.5),
+                                                                isSelected ? Color.white.opacity(0.3) : Color.white.opacity(0.05),
                                                                 lineWidth: isSelected ? 1 : 0.5
                                                             )
                                                     )
                                                 Image(systemName: iconName)
                                                     .font(.system(size: 20))
-                                                    .foregroundColor(isSelected ? AppTheme.tabActive : AppTheme.textMuted)
+                                                    .foregroundColor(isSelected ? .white : Color(hex: "666666"))
                                             }
                                         }
                                         .buttonStyle(.plain)

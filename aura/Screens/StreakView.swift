@@ -8,14 +8,9 @@ struct StreakView: View {
 
     var body: some View {
         ZStack {
-            StarfieldBackground(starCount: 180)
-
-            RadialGradient(
-                colors: [AppTheme.accentOrange.opacity(0.06), .clear],
-                center: .init(x: 0.5, y: 0.35),
-                startRadius: 30, endRadius: 250
-            )
-            .ignoresSafeArea()
+            Color(hex: "050505").ignoresSafeArea()
+            StarfieldBackground(starCount: 60)
+                .opacity(0.2)
 
             VStack(spacing: 0) {
                 Spacer()
@@ -25,7 +20,7 @@ struct StreakView: View {
                 ZStack {
                     Image(systemName: "flame.fill")
                         .font(.system(size: 120))
-                        .foregroundColor(AppTheme.accentOrange.opacity(flameGlow ? 0.2 : 0.08))
+                        .foregroundColor(Color.white.opacity(flameGlow ? 0.12 : 0.04))
                         .blur(radius: 25)
                         .scaleEffect(flameScale * 1.3)
 
@@ -33,15 +28,15 @@ struct StreakView: View {
                         .font(.system(size: 100))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [Color(hex: "FF4500"), AppTheme.accentOrange, AppTheme.goldBright],
+                                colors: [Color.white.opacity(0.9), Color.white.opacity(0.6), Color.white.opacity(0.3)],
                                 startPoint: .bottom, endPoint: .top
                             )
                         )
-                        .shadow(color: AppTheme.accentOrange.opacity(0.5), radius: 15)
+                        .shadow(color: Color.white.opacity(0.2), radius: 15)
                         .scaleEffect(flameScale)
 
                     Text("\(streak)")
-                        .font(.system(size: 42, weight: .bold, design: .serif))
+                        .font(.system(size: 42, weight: .black))
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.5), radius: 4)
                         .offset(y: -5)
@@ -50,22 +45,22 @@ struct StreakView: View {
                 }
 
                 Text("DAYS")
-                    .font(.system(size: 28, weight: .bold, design: .serif))
+                    .font(.system(size: 28, weight: .black))
                     .foregroundColor(.white)
-                    .tracking(8)
+                    .tracking(10)
                     .padding(.top, 16)
 
                 VStack(spacing: 4) {
                     Text("If you complete all daily quests today,")
-                        .font(.system(size: 14, weight: .regular, design: .serif))
-                        .foregroundColor(AppTheme.textMuted)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Color(hex: "555555"))
                     HStack(spacing: 0) {
                         Text("STREAK BECOMES ")
-                            .font(.system(size: 14, weight: .medium, design: .serif))
-                            .foregroundColor(AppTheme.textMuted)
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(Color(hex: "555555"))
                         Text("\(streak + 1)")
-                            .font(.system(size: 18, weight: .bold, design: .serif))
-                            .foregroundColor(AppTheme.goldBright)
+                            .font(.system(size: 18, weight: .black))
+                            .foregroundColor(.white)
                     }
                 }
                 .padding(.top, 24)

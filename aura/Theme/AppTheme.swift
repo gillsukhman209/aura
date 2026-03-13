@@ -1,23 +1,23 @@
 import SwiftUI
 
 enum AppTheme {
-    // MARK: - Backgrounds (dark blue-purple base)
-    static let bgPure = Color(hex: "08081A")
-    static let bgCard = Color(hex: "10101E")
-    static let bgCardBorder = Color(hex: "1E1E35")
-    static let bgTabBar = Color(hex: "06060F")
+    // MARK: - Backgrounds (pure black base)
+    static let bgPure = Color(hex: "050505")
+    static let bgCard = Color(hex: "111111")
+    static let bgCardBorder = Color(hex: "1E1E1E")
+    static let bgTabBar = Color(hex: "050505")
 
-    // MARK: - Galaxy / Atmosphere
-    static let cloudWarm = Color(red: 0.18, green: 0.12, blue: 0.22)
-    static let cloudCool = Color(red: 0.10, green: 0.10, blue: 0.20)
-    static let cloudWisp = Color(red: 0.15, green: 0.10, blue: 0.25)
+    // MARK: - Galaxy / Atmosphere (muted, neutral)
+    static let cloudWarm = Color(red: 0.12, green: 0.12, blue: 0.14)
+    static let cloudCool = Color(red: 0.08, green: 0.08, blue: 0.10)
+    static let cloudWisp = Color(red: 0.10, green: 0.10, blue: 0.12)
 
     // MARK: - Ring
-    static let ringTrackDark = Color(hex: "04040C")
-    static let ringTrackShadow = Color(hex: "06060E")
-    static let ringTrackBody = Color(hex: "141420")
-    static let ringTrackBodyAlt = Color(hex: "0C0C18")
-    static let ringBevel = Color(hex: "2A2A40")
+    static let ringTrackDark = Color(hex: "040404")
+    static let ringTrackShadow = Color(hex: "060606")
+    static let ringTrackBody = Color(hex: "121212")
+    static let ringTrackBodyAlt = Color(hex: "0A0A0A")
+    static let ringBevel = Color(hex: "2A2A2A")
     static let ringGlow = Color(hex: "4090E0")
     static let ringGlowWide = Color(hex: "3878D0")
     static let ringGoldTip = Color(hex: "E8D430")
@@ -36,13 +36,13 @@ enum AppTheme {
     static let arcGoldMid = Color(hex: "D8C038")
     static let arcGoldEnd = Color(hex: "E8D430")
 
-    // MARK: - Text
-    static let textBright = Color(hex: "F4F4FF")
-    static let textMuted = Color(hex: "A0A0BC")
-    static let textDim = Color(hex: "8080A8")
+    // MARK: - Text (neutral grays, no purple tint)
+    static let textBright = Color(hex: "F0F0F0")
+    static let textMuted = Color(hex: "888888")
+    static let textDim = Color(hex: "666666")
     static let textGold = Color(hex: "DCCA58")
-    static let textStat = Color(hex: "DCDCF0")
-    static let textSubtle = Color(hex: "686888")
+    static let textStat = Color(hex: "D0D0D0")
+    static let textSubtle = Color(hex: "505050")
 
     // MARK: - Stat Icon Colors
     static let statGold = Color(hex: "C9A84C")
@@ -50,8 +50,8 @@ enum AppTheme {
     static let statOrange = Color(hex: "E8652B")
 
     // MARK: - Progress Bars
-    static let barGroove = Color(hex: "0C0C1A")
-    static let barGrooveBorder = Color(hex: "181828")
+    static let barGroove = Color(hex: "0C0C0C")
+    static let barGrooveBorder = Color(hex: "1A1A1A")
     static let barFillStart = Color(hex: "1E4878")
     static let barFillMid1 = Color(hex: "2C6CB0")
     static let barFillMid2 = Color(hex: "3C88D0")
@@ -60,10 +60,10 @@ enum AppTheme {
     static let barHotEdge = Color(hex: "70B8FF")
 
     // MARK: - Tab Bar
-    static let tabActive = Color(hex: "5090F0")
-    static let tabInactive = Color(hex: "303048")
-    static let tabGlow = Color(hex: "4080E0")
-    static let tabSeparator = Color(hex: "1E1E35")
+    static let tabActive = Color(hex: "FFFFFF")
+    static let tabInactive = Color(hex: "3A3A3A")
+    static let tabGlow = Color(hex: "FFFFFF")
+    static let tabSeparator = Color(hex: "1A1A1A")
 
     // MARK: - Accents
     static let accentGreen = Color(hex: "4ADE80")
@@ -74,9 +74,9 @@ enum AppTheme {
     static let gold = Color(hex: "C9A84C")
 
     // MARK: - Decorative
-    static let dividerColor = Color(hex: "1C1C32")
-    static let headerDiamond = Color(hex: "3A3A55")
-    static let headerLine = Color(hex: "2A2A45")
+    static let dividerColor = Color(hex: "1A1A1A")
+    static let headerDiamond = Color(hex: "333333")
+    static let headerLine = Color(hex: "252525")
 
     // MARK: - Gradients
     static let goldGradient = LinearGradient(

@@ -16,12 +16,12 @@ struct WeeklyXPChart: View {
         VStack(spacing: 12) {
             HStack {
                 Text("THIS WEEK")
-                    .font(.system(size: 11, weight: .medium, design: .serif))
-                    .foregroundColor(AppTheme.textMuted)
-                    .tracking(2)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(Color(hex: "555555"))
+                    .tracking(3)
                 Spacer()
                 Text("\(totalWeekXP) AP")
-                    .font(.system(size: 14, weight: .bold, design: .serif))
+                    .font(.system(size: 14, weight: .black))
                     .foregroundColor(AppTheme.accentGreen)
             }
             .padding(.horizontal, 4)
@@ -38,7 +38,7 @@ struct WeeklyXPChart: View {
                         if item.xp > 0 {
                             Text("\(item.xp)")
                                 .font(.system(size: 8, weight: .bold))
-                                .foregroundColor(AppTheme.textMuted)
+                                .foregroundColor(Color(hex: "666666"))
                         }
 
                         RoundedRectangle(cornerRadius: 4)
@@ -49,7 +49,7 @@ struct WeeklyXPChart: View {
                                         startPoint: .top, endPoint: .bottom
                                     )
                                     : LinearGradient(
-                                        colors: [AppTheme.barGroove, AppTheme.barGroove],
+                                        colors: [Color(hex: "1A1A1A"), Color(hex: "1A1A1A")],
                                         startPoint: .top, endPoint: .bottom
                                     )
                             )
@@ -57,8 +57,8 @@ struct WeeklyXPChart: View {
                             .shadow(color: item.xp > 0 ? AppTheme.accentGreen.opacity(0.2) : .clear, radius: 3)
 
                         Text(item.label)
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundColor(AppTheme.textMuted)
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(Color(hex: "555555"))
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -69,10 +69,10 @@ struct WeeklyXPChart: View {
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(AppTheme.bgCard.opacity(0.5))
+                .fill(Color(hex: "0A0A0A"))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(AppTheme.bgCardBorder.opacity(0.3), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
                 )
         )
         .padding(.horizontal, 4)

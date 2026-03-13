@@ -14,7 +14,7 @@ struct GlowingButton: View {
 
     private var buttonColor: Color {
         switch style {
-        case .outlined, .filled: return AppTheme.tabActive
+        case .outlined, .filled: return .white
         case .danger: return AppTheme.accentDanger
         }
     }
@@ -22,7 +22,7 @@ struct GlowingButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 14, weight: .medium, design: .serif))
+                .font(.system(size: 14, weight: .bold))
                 .foregroundColor(.white)
                 .tracking(4)
                 .frame(maxWidth: .infinity)
@@ -32,24 +32,24 @@ struct GlowingButton: View {
                         switch style {
                         case .outlined:
                             RoundedRectangle(cornerRadius: 14)
-                                .fill(buttonColor.opacity(0.06))
+                                .fill(buttonColor.opacity(0.04))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 14)
                                         .stroke(
-                                            buttonColor.opacity(glowing ? 0.7 : 0.3),
+                                            buttonColor.opacity(glowing ? 0.5 : 0.2),
                                             lineWidth: 1
                                         )
                                 )
-                                .shadow(color: buttonColor.opacity(glowing ? 0.3 : 0.1), radius: glowing ? 12 : 6)
+                                .shadow(color: buttonColor.opacity(glowing ? 0.15 : 0.05), radius: glowing ? 12 : 6)
                         case .filled:
                             RoundedRectangle(cornerRadius: 14)
                                 .fill(
                                     LinearGradient(
-                                        colors: [buttonColor, buttonColor.opacity(0.7)],
+                                        colors: [buttonColor.opacity(0.2), buttonColor.opacity(0.1)],
                                         startPoint: .topLeading, endPoint: .bottomTrailing
                                     )
                                 )
-                                .shadow(color: buttonColor.opacity(glowing ? 0.5 : 0.2), radius: glowing ? 12 : 6)
+                                .shadow(color: buttonColor.opacity(glowing ? 0.3 : 0.1), radius: glowing ? 12 : 6)
                         case .danger:
                             RoundedRectangle(cornerRadius: 14)
                                 .fill(buttonColor.opacity(0.08))

@@ -66,17 +66,19 @@ struct LevelUpOverlay: View {
                 // Text
                 VStack(spacing: 6) {
                     Text("RANK UP")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 12, weight: .black))
                         .foregroundColor(levelInfo.color)
                         .tracking(6)
 
-                    Text(levelInfo.displayName)
-                        .font(.system(size: 28, weight: .bold, design: .serif))
+                    Text(levelInfo.displayName.uppercased())
+                        .font(.system(size: 26, weight: .black))
                         .foregroundColor(.white)
+                        .tracking(2)
 
-                    Text("Level \(levelInfo.globalLevel)")
-                        .font(.system(size: 14, weight: .medium, design: .serif))
-                        .foregroundColor(AppTheme.textMuted)
+                    Text("LEVEL \(levelInfo.globalLevel)")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundColor(Color(hex: "555555"))
+                        .tracking(2)
                 }
                 .offset(y: textOffset)
                 .opacity(opacity)
@@ -143,7 +145,7 @@ struct DailyBonusOverlay: View {
             VStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill(AppTheme.gold.opacity(glowPulse ? 0.2 : 0.08))
+                        .fill(Color.white.opacity(glowPulse ? 0.12 : 0.04))
                         .frame(width: 100, height: 100)
                         .blur(radius: 20)
 
@@ -151,28 +153,27 @@ struct DailyBonusOverlay: View {
                         .font(.system(size: 44, weight: .semibold))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [AppTheme.gold, AppTheme.goldBright],
+                                colors: [.white, .white.opacity(0.6)],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
                         )
-                        .shadow(color: AppTheme.gold.opacity(0.5), radius: 10)
+                        .shadow(color: Color.white.opacity(0.3), radius: 10)
                 }
                 .scaleEffect(scale)
 
                 Text("ALL QUESTS COMPLETE")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(AppTheme.gold)
+                    .font(.system(size: 11, weight: .black))
+                    .foregroundColor(.white)
                     .tracking(4)
 
                 Text("+40 Aura")
-                    .font(.system(size: 32, weight: .bold, design: .serif))
+                    .font(.system(size: 32, weight: .black))
                     .foregroundColor(.white)
-                    .shadow(color: AppTheme.gold.opacity(0.3), radius: 8)
 
                 Text("Daily Completion Bonus")
-                    .font(.system(size: 13, weight: .medium, design: .serif))
-                    .foregroundColor(AppTheme.textMuted)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(Color(hex: "555555"))
             }
             .opacity(opacity)
         }
@@ -239,17 +240,17 @@ struct AuraLostOverlay: View {
                 .offset(x: shakeOffset)
 
                 Text("AURA LOST")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 11, weight: .black))
                     .foregroundColor(AppTheme.accentDanger)
                     .tracking(4)
 
                 Text("-\(amount) Aura")
-                    .font(.system(size: 28, weight: .bold, design: .serif))
+                    .font(.system(size: 28, weight: .black))
                     .foregroundColor(AppTheme.accentDanger)
 
                 Text("Streak broken — stay consistent!")
-                    .font(.system(size: 13, weight: .medium, design: .serif))
-                    .foregroundColor(AppTheme.textMuted)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(Color(hex: "555555"))
             }
             .opacity(opacity)
         }

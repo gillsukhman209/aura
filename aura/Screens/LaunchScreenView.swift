@@ -9,29 +9,30 @@ struct LaunchScreenView: View {
 
     var body: some View {
         ZStack {
-            StarfieldBackground(starCount: 250)
+            Color(hex: "050505").ignoresSafeArea()
+            StarfieldBackground(starCount: 80)
+                .opacity(0.25)
 
             VStack(spacing: 0) {
                 Spacer()
 
                 VStack(spacing: 4) {
                     Text("BUILD YOUR")
-                        .font(.system(size: 24, weight: .regular, design: .serif))
-                        .foregroundColor(.white)
-                        .tracking(4)
-
-                    Text("CHARACTER")
-                        .font(.system(size: 38, weight: .bold, design: .serif))
+                        .font(.system(size: 22, weight: .medium))
                         .foregroundColor(.white)
                         .tracking(6)
+
+                    Text("CHARACTER")
+                        .font(.system(size: 38, weight: .black))
+                        .foregroundColor(.white)
+                        .tracking(8)
                 }
                 .opacity(titleOpacity)
                 .offset(y: titleOffset)
 
                 Text("Your real-life RPG.")
-                    .font(.system(size: 14, weight: .regular, design: .serif))
-                    .foregroundColor(AppTheme.textMuted)
-                    .italic()
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(Color(hex: "555555"))
                     .padding(.top, 14)
                     .opacity(subtitleOpacity)
 

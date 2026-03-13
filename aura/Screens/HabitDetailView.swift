@@ -10,7 +10,7 @@ struct HabitDetailView: View {
 
     var body: some View {
         ZStack {
-            AppTheme.bgPure.ignoresSafeArea()
+            Color(hex: "050505").ignoresSafeArea()
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
@@ -19,9 +19,9 @@ struct HabitDetailView: View {
                         Button { dismiss() } label: {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(AppTheme.textMuted)
+                                .foregroundColor(Color(hex: "888888"))
                                 .frame(width: 32, height: 32)
-                                .background(Circle().fill(AppTheme.bgCard))
+                                .background(Circle().fill(Color(hex: "111111")))
                         }
                         Spacer()
                     }
@@ -40,18 +40,18 @@ struct HabitDetailView: View {
                         }
 
                         Text(habit.name)
-                            .font(.custom("Georgia-Bold", size: 20))
-                            .foregroundColor(AppTheme.textBright)
+                            .font(.system(size: 20, weight: .black))
+                            .foregroundColor(Color(hex: "F0F0F0"))
 
                         HStack(spacing: 12) {
-                            statPill(habit.type.label, color: AppTheme.tabActive)
+                            statPill(habit.type.label, color: .white)
                             statPill(habit.difficulty.label, color: habit.difficulty.color)
                             statPill(habit.stat.label, color: habit.stat.color)
                         }
 
                         Text(habit.schedule.label)
-                            .font(.system(size: 12, design: .serif))
-                            .foregroundColor(AppTheme.textSubtle)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(Color(hex: "555555"))
                     }
 
                     // ── Quick Stats ──
@@ -101,15 +101,15 @@ struct HabitDetailView: View {
 
                         if recentLogs.isEmpty {
                             Text("No logs yet")
-                                .font(.system(size: 13, design: .serif))
-                                .foregroundColor(AppTheme.textSubtle)
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(Color(hex: "555555"))
                         } else {
                             VStack(spacing: 0) {
                                 ForEach(Array(recentLogs), id: \.id) { log in
                                     logRow(log)
                                     if log.id != recentLogs.last?.id {
                                         Rectangle()
-                                            .fill(AppTheme.bgCardBorder.opacity(0.3))
+                                            .fill(Color(hex: "1A1A1A"))
                                             .frame(height: 0.5)
                                     }
                                 }
@@ -131,7 +131,7 @@ struct HabitDetailView: View {
 
     private func statPill(_ text: String, color: Color) -> some View {
         Text(text)
-            .font(.system(size: 10, weight: .semibold))
+            .font(.system(size: 10, weight: .bold))
             .foregroundColor(color)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
@@ -147,20 +147,21 @@ struct HabitDetailView: View {
                 .font(.system(size: 16))
                 .foregroundColor(color)
             Text(value)
-                .font(.system(size: 20, weight: .bold, design: .serif))
-                .foregroundColor(AppTheme.textBright)
-            Text(label)
-                .font(.system(size: 10, weight: .medium))
-                .foregroundColor(AppTheme.textSubtle)
+                .font(.system(size: 20, weight: .black))
+                .foregroundColor(Color(hex: "F0F0F0"))
+            Text(label.uppercased())
+                .font(.system(size: 9, weight: .bold))
+                .foregroundColor(Color(hex: "555555"))
+                .tracking(1)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(AppTheme.bgCard)
+                .fill(Color(hex: "0A0A0A"))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
                 )
         )
     }
@@ -168,14 +169,14 @@ struct HabitDetailView: View {
     private func rateBar(label: String, rate: Double) -> some View {
         HStack(spacing: 10) {
             Text(label)
-                .font(.system(size: 12, weight: .medium, design: .serif))
-                .foregroundColor(AppTheme.textMuted)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(Color(hex: "666666"))
                 .frame(width: 52, alignment: .trailing)
 
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule()
-                        .fill(AppTheme.barGroove)
+                        .fill(Color(hex: "1A1A1A"))
                         .frame(height: 6)
                     Capsule()
                         .fill(
@@ -191,7 +192,7 @@ struct HabitDetailView: View {
             .frame(height: 6)
 
             Text("\(Int(rate * 100))%")
-                .font(.system(size: 12, weight: .bold, design: .serif))
+                .font(.system(size: 12, weight: .black))
                 .foregroundColor(rateColor(rate))
                 .frame(width: 36, alignment: .trailing)
         }
@@ -211,19 +212,19 @@ struct HabitDetailView: View {
                 .frame(width: 20)
 
             Text(log.date.formatted(.dateTime.month(.abbreviated).day()))
-                .font(.system(size: 13, weight: .medium, design: .serif))
-                .foregroundColor(AppTheme.textBright)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(Color(hex: "F0F0F0"))
 
             Spacer()
 
             if let value = log.value, habit.type == .numeric {
                 Text("\(String(format: "%.1f", value)) \(habit.unit ?? "")")
-                    .font(.system(size: 12, weight: .medium, design: .serif))
-                    .foregroundColor(AppTheme.textMuted)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color(hex: "666666"))
             }
 
             Text(log.status.rawValue.capitalized)
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: .bold))
                 .foregroundColor(statusColor(log.status))
         }
         .padding(.vertical, 8)
@@ -243,7 +244,7 @@ struct HabitDetailView: View {
         case .completed: return AppTheme.accentGreen
         case .partial: return AppTheme.gold
         case .relapsed: return AppTheme.accentDanger
-        case .skipped: return AppTheme.textSubtle
+        case .skipped: return Color(hex: "555555")
         }
     }
 
@@ -251,8 +252,8 @@ struct HabitDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title.uppercased())
                 .font(.system(size: 10, weight: .bold))
-                .foregroundColor(AppTheme.textSubtle)
-                .tracking(1.5)
+                .foregroundColor(Color(hex: "555555"))
+                .tracking(2)
 
             content()
         }
@@ -260,10 +261,10 @@ struct HabitDetailView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(AppTheme.bgCard)
+                .fill(Color(hex: "0A0A0A"))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
                 )
         )
     }

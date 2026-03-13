@@ -16,17 +16,17 @@ struct AuraCheckView: View {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(AppTheme.textMuted)
+                            .foregroundColor(Color(hex: "888888"))
                             .frame(width: 32, height: 32)
-                            .background(Circle().fill(AppTheme.bgCard))
+                            .background(Circle().fill(Color(hex: "111111")))
                     }
                     .buttonStyle(.plain)
 
                     Spacer()
 
                     Text("AURA CHECK")
-                        .font(.system(size: 14, weight: .medium, design: .serif))
-                        .foregroundColor(AppTheme.textMuted)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(Color(hex: "555555"))
                         .tracking(4)
 
                     Spacer()
@@ -37,9 +37,9 @@ struct AuraCheckView: View {
                     } label: {
                         Image(systemName: "square.and.arrow.up")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(AppTheme.textMuted)
+                            .foregroundColor(Color(hex: "888888"))
                             .frame(width: 32, height: 32)
-                            .background(Circle().fill(AppTheme.bgCard))
+                            .background(Circle().fill(Color(hex: "111111")))
                     }
                     .buttonStyle(.plain)
                 }
@@ -56,8 +56,9 @@ struct AuraCheckView: View {
                 Spacer()
 
                 Text("Screenshot to share your aura")
-                    .font(.system(size: 12, weight: .medium, design: .serif))
-                    .foregroundColor(AppTheme.textSubtle)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(Color(hex: "333333"))
+                    .tracking(1)
                     .padding(.bottom, 30)
             }
         }
@@ -97,24 +98,26 @@ struct AuraCheckView: View {
 
             // ── Rank name ──
             VStack(spacing: 4) {
-                Text(info.displayName)
-                    .font(.system(size: 24, weight: .bold, design: .serif))
+                Text(info.displayName.uppercased())
+                    .font(.system(size: 22, weight: .black))
                     .foregroundColor(.white)
+                    .tracking(2)
 
-                Text("Level \(info.globalLevel)")
-                    .font(.system(size: 13, weight: .medium, design: .serif))
+                Text("LEVEL \(info.globalLevel)")
+                    .font(.system(size: 12, weight: .bold))
                     .foregroundColor(info.color)
+                    .tracking(2)
             }
 
             // ── Aura Score ──
             VStack(spacing: 2) {
                 Text("\(manager.totalXP)")
-                    .font(.system(size: 48, weight: .bold, design: .serif))
+                    .font(.system(size: 48, weight: .black))
                     .foregroundColor(.white)
                     .shadow(color: info.color.opacity(0.3), radius: 12)
                 Text("AURA POINTS")
                     .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(AppTheme.textMuted)
+                    .foregroundColor(Color(hex: "555555"))
                     .tracking(4)
             }
 
@@ -133,11 +136,11 @@ struct AuraCheckView: View {
                             .foregroundColor(stat.color)
                             .frame(width: 20)
                         Text(stat.name)
-                            .font(.system(size: 12, weight: .medium, design: .serif))
-                            .foregroundColor(AppTheme.textMuted)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(Color(hex: "666666"))
                         Spacer()
                         Text("+\(stat.value)")
-                            .font(.system(size: 13, weight: .bold, design: .serif))
+                            .font(.system(size: 13, weight: .black))
                             .foregroundColor(.white)
                     }
                 }
@@ -158,40 +161,40 @@ struct AuraCheckView: View {
                             .font(.system(size: 12))
                             .foregroundColor(AppTheme.accentOrange)
                         Text("\(manager.currentStreak)")
-                            .font(.system(size: 16, weight: .bold, design: .serif))
+                            .font(.system(size: 16, weight: .black))
                             .foregroundColor(.white)
                     }
                     Text("STREAK")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(AppTheme.textSubtle)
+                        .foregroundColor(Color(hex: "444444"))
                         .tracking(2)
                 }
 
                 VStack(spacing: 2) {
                     Text("\(manager.consistencyScore)%")
-                        .font(.system(size: 16, weight: .bold, design: .serif))
+                        .font(.system(size: 16, weight: .black))
                         .foregroundColor(.white)
                     Text("CONSISTENCY")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(AppTheme.textSubtle)
+                        .foregroundColor(Color(hex: "444444"))
                         .tracking(2)
                 }
 
                 VStack(spacing: 2) {
                     Text("\(manager.longestStreak)")
-                        .font(.system(size: 16, weight: .bold, design: .serif))
+                        .font(.system(size: 16, weight: .black))
                         .foregroundColor(.white)
                     Text("BEST STREAK")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(AppTheme.textSubtle)
+                        .foregroundColor(Color(hex: "444444"))
                         .tracking(2)
                 }
             }
 
             // ── Branding ──
             Text("AURA")
-                .font(.custom("Georgia-Bold", size: 12))
-                .foregroundColor(AppTheme.textSubtle)
+                .font(.system(size: 12, weight: .black))
+                .foregroundColor(Color(hex: "333333"))
                 .tracking(6)
                 .padding(.top, 4)
         }
@@ -202,9 +205,9 @@ struct AuraCheckView: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color(hex: "0D0D12"),
-                            Color(hex: "111118"),
-                            Color(hex: "0A0A0F"),
+                            Color(hex: "0A0A0A"),
+                            Color(hex: "0E0E0E"),
+                            Color(hex: "080808"),
                         ],
                         startPoint: .top,
                         endPoint: .bottom
@@ -231,7 +234,6 @@ struct AuraCheckView: View {
 
     @MainActor
     private func shareAuraCard() {
-        // Render the card as an image
         let renderer = ImageRenderer(content:
             auraCard
                 .frame(width: 360)

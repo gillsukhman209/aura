@@ -7,14 +7,16 @@ struct RankView: View {
 
     var body: some View {
         ZStack {
-            StarfieldBackground(starCount: 180)
+            Color(hex: "050505").ignoresSafeArea()
+            StarfieldBackground(starCount: 60)
+                .opacity(0.2)
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     Text("RANK")
-                        .font(.system(size: 20, weight: .regular, design: .serif))
-                        .foregroundColor(.white)
-                        .tracking(4)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(Color(hex: "555555"))
+                        .tracking(6)
                         .padding(.top, 12)
 
                     // ── Current rank badge ──
@@ -44,19 +46,21 @@ struct RankView: View {
                                 .shadow(color: info.color.opacity(0.5), radius: 10)
                         }
 
-                        Text(info.displayName)
-                            .font(.system(size: 22, weight: .bold, design: .serif))
+                        Text(info.displayName.uppercased())
+                            .font(.system(size: 20, weight: .black))
                             .foregroundColor(.white)
+                            .tracking(2)
 
-                        Text("Level \(info.globalLevel)")
-                            .font(.system(size: 13, weight: .medium, design: .serif))
-                            .foregroundColor(AppTheme.textMuted)
+                        Text("LEVEL \(info.globalLevel)")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(Color(hex: "555555"))
+                            .tracking(2)
 
                         // XP progress bar
                         VStack(spacing: 6) {
                             GeometryReader { geo in
                                 ZStack(alignment: .leading) {
-                                    Capsule().fill(AppTheme.barGroove).frame(height: 4)
+                                    Capsule().fill(Color(hex: "1A1A1A")).frame(height: 4)
                                     Capsule()
                                         .fill(
                                             LinearGradient(
@@ -72,22 +76,24 @@ struct RankView: View {
                             .padding(.horizontal, 40)
 
                             Text("\(info.currentXP) / \(info.xpRequired) AP")
-                                .font(.system(size: 12, weight: .medium, design: .serif))
+                                .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(info.color)
                         }
 
                         // Consistency score
                         let score = manager.consistencyScore
-                        Text("Consistency: \(score)%")
-                            .font(.system(size: 12, weight: .medium, design: .serif))
-                            .foregroundColor(AppTheme.textMuted)
+                        Text("CONSISTENCY: \(score)%")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(Color(hex: "555555"))
+                            .tracking(2)
                             .padding(.top, 4)
                     }
                     .padding(.vertical, 16)
 
                     Rectangle()
-                        .fill(LinearGradient(colors: [.clear, AppTheme.bgCardBorder, .clear], startPoint: .leading, endPoint: .trailing))
+                        .fill(Color(hex: "1A1A1A"))
                         .frame(height: 0.5)
+                        .padding(.horizontal, 20)
 
                     // ── View All Levels button ──
                     Button { showRoadmap = true } label: {
@@ -95,34 +101,35 @@ struct RankView: View {
                             Image(systemName: "list.number")
                                 .font(.system(size: 14, weight: .medium))
                             Text("View All Levels")
-                                .font(.system(size: 14, weight: .medium, design: .serif))
+                                .font(.system(size: 14, weight: .semibold))
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 11, weight: .semibold))
                         }
-                        .foregroundColor(AppTheme.textMuted)
+                        .foregroundColor(Color(hex: "888888"))
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
                         .background(
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(AppTheme.bgCard.opacity(0.5))
+                                .fill(Color(hex: "0A0A0A"))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(AppTheme.bgCardBorder.opacity(0.3), lineWidth: 0.5)
+                                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
                                 )
                         )
                     }
                     .buttonStyle(.plain)
 
                     Rectangle()
-                        .fill(LinearGradient(colors: [.clear, AppTheme.bgCardBorder, .clear], startPoint: .leading, endPoint: .trailing))
+                        .fill(Color(hex: "1A1A1A"))
                         .frame(height: 0.5)
+                        .padding(.horizontal, 20)
 
                     // ── Rank tier preview ──
                     Text("RANK TIERS")
-                        .font(.system(size: 11, weight: .medium, design: .serif))
-                        .foregroundColor(AppTheme.textMuted)
-                        .tracking(2)
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color(hex: "555555"))
+                        .tracking(3)
 
                     VStack(spacing: 6) {
                         ForEach(RankTier.allCases, id: \.rawValue) { tier in
@@ -142,16 +149,17 @@ struct RankView: View {
                                     } else {
                                         Image(systemName: "lock.fill")
                                             .font(.system(size: 13))
-                                            .foregroundColor(AppTheme.textSubtle)
+                                            .foregroundColor(Color(hex: "333333"))
                                     }
                                 }
 
-                                Text(tier.name)
-                                    .font(.system(size: 15, weight: isCurrentTier ? .bold : .medium, design: .serif))
+                                Text(tier.name.uppercased())
+                                    .font(.system(size: 14, weight: isCurrentTier ? .black : .semibold))
                                     .foregroundColor(
                                         isCurrentTier ? .white :
-                                        isUnlocked ? AppTheme.textMuted : AppTheme.textSubtle
+                                        isUnlocked ? Color(hex: "888888") : Color(hex: "444444")
                                     )
+                                    .tracking(1)
 
                                 Spacer()
 
@@ -159,6 +167,7 @@ struct RankView: View {
                                     Text("CURRENT")
                                         .font(.system(size: 9, weight: .bold))
                                         .foregroundColor(tier.color)
+                                        .tracking(1)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 3)
                                         .background(
@@ -167,21 +176,21 @@ struct RankView: View {
                                 }
 
                                 Text("Lv \(tier.rawValue * 5 + 1)-\(tier.rawValue * 5 + 5)")
-                                    .font(.system(size: 12, weight: .medium, design: .serif))
+                                    .font(.system(size: 12, weight: .bold))
                                     .foregroundColor(
                                         isCurrentTier ? tier.color :
-                                        isUnlocked ? AppTheme.textMuted : AppTheme.textSubtle
+                                        isUnlocked ? Color(hex: "666666") : Color(hex: "333333")
                                     )
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
                             .background(
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(isCurrentTier ? tier.color.opacity(0.08) : AppTheme.bgCard.opacity(0.5))
+                                    .fill(isCurrentTier ? tier.color.opacity(0.08) : Color(hex: "0A0A0A"))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12)
                                             .stroke(
-                                                isCurrentTier ? tier.color.opacity(0.3) : AppTheme.bgCardBorder.opacity(0.2),
+                                                isCurrentTier ? tier.color.opacity(0.3) : Color.white.opacity(0.04),
                                                 lineWidth: isCurrentTier ? 1.5 : 0.5
                                             )
                                     )

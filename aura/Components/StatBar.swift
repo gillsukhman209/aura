@@ -18,34 +18,29 @@ struct StatBar: View {
                 // ── Icon ──
                 ZStack {
                     Circle()
-                        .fill(stat.color.opacity(0.18))
+                        .fill(stat.color.opacity(0.12))
                         .frame(width: 40, height: 40)
                         .overlay(
                             Circle()
-                                .stroke(stat.color.opacity(0.15), lineWidth: 0.5)
+                                .stroke(stat.color.opacity(0.10), lineWidth: 0.5)
                         )
-                    Circle()
-                        .fill(stat.color.opacity(0.08))
-                        .frame(width: 40, height: 40)
-                        .blur(radius: 5)
 
                     Image(systemName: stat.icon)
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(stat.color)
-                        .shadow(color: stat.color.opacity(0.4), radius: 3)
+                        .shadow(color: stat.color.opacity(0.3), radius: 3)
                 }
                 .padding(.trailing, 12)
 
                 // ── Name + subtitle ──
                 VStack(alignment: .leading, spacing: 2) {
                     Text(stat.name)
-                        .font(.custom("Georgia", size: 16))
-                        .foregroundColor(AppTheme.textStat)
-                        .shadow(color: .white.opacity(0.05), radius: 4)
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundColor(Color(hex: "C0C0C0"))
 
                     Text(stat.subtitle)
-                        .font(.system(size: 8, weight: .semibold))
-                        .foregroundColor(AppTheme.textSubtle)
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(Color(hex: "444444"))
                         .tracking(1.5)
                 }
                 .frame(width: 95, alignment: .leading)
@@ -55,52 +50,31 @@ struct StatBar: View {
                     ZStack(alignment: .leading) {
                         // Dark groove
                         Capsule()
-                            .fill(AppTheme.barGroove)
+                            .fill(Color(hex: "1A1A1A"))
                             .frame(height: 4)
-                            .overlay(
-                                Capsule()
-                                    .stroke(AppTheme.barGrooveBorder, lineWidth: 0.5)
-                            )
 
                         // Glow layer behind fill
                         Capsule()
-                            .fill(AppTheme.barGlow)
+                            .fill(stat.color.opacity(0.3))
                             .frame(width: barFill * geo.size.width, height: 4)
                             .blur(radius: 6)
                             .opacity(0.5)
 
-                        // Luminous fill
+                        // Fill
                         Capsule()
                             .fill(
                                 LinearGradient(
                                     colors: [
-                                        AppTheme.barFillStart,
-                                        AppTheme.barFillMid1,
-                                        AppTheme.barFillMid2,
-                                        AppTheme.barFillEnd,
+                                        stat.color.opacity(0.5),
+                                        stat.color.opacity(0.7),
+                                        stat.color,
                                     ],
                                     startPoint: .leading,
                                     endPoint: .trailing
                                 )
                             )
                             .frame(width: barFill * geo.size.width, height: 4)
-                            .shadow(color: AppTheme.barGlow.opacity(0.8), radius: 4)
-                            .shadow(color: AppTheme.barGlow.opacity(0.3), radius: 12)
-
-                        // Hot-edge specular
-                        Capsule()
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        AppTheme.barHotEdge.opacity(0.0),
-                                        AppTheme.barHotEdge.opacity(0.5),
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(width: barFill * geo.size.width, height: 1)
-                            .offset(y: -1.5)
+                            .shadow(color: stat.color.opacity(0.4), radius: 4)
                     }
                 }
                 .frame(height: 4)
@@ -108,9 +82,8 @@ struct StatBar: View {
 
                 // ── Value ──
                 Text("\(stat.value)")
-                    .font(.custom("Georgia-Bold", size: 17))
-                    .foregroundColor(AppTheme.textBright)
-                    .shadow(color: AppTheme.ringGlow.opacity(0.2), radius: 4)
+                    .font(.system(size: 17, weight: .black))
+                    .foregroundColor(Color(hex: "F0F0F0"))
                     .frame(width: 34, alignment: .trailing)
             }
             .padding(.vertical, 13)
@@ -118,13 +91,7 @@ struct StatBar: View {
             // ── Divider ──
             if !isLast {
                 Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.clear, AppTheme.dividerColor.opacity(0.6), AppTheme.dividerColor.opacity(0.6), .clear],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .fill(Color(hex: "1A1A1A"))
                     .frame(height: 0.5)
                     .padding(.leading, 52)
                     .padding(.trailing, 4)
