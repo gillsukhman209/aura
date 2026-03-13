@@ -37,12 +37,6 @@ struct DayResetService {
         var date = evalStart
         while date < today {
             evaluateDay(date, profile: profile, habits: habits, calendar: calendar)
-
-            // Check timesPerWeek on Sunday midnight
-            if calendar.component(.weekday, from: date) == 1 { // Sunday
-                evaluateWeeklyHabits(weekEndingOn: date, profile: profile, habits: habits, calendar: calendar)
-            }
-
             guard let next = calendar.date(byAdding: .day, value: 1, to: date) else { break }
             date = next
         }
@@ -54,11 +48,7 @@ struct DayResetService {
 
     /// Evaluate a single past day.
     private func evaluateDay(_ date: Date, profile: UserProfile, habits: [Habit], calendar: Calendar) {
-        // Only evaluate daily and specificDays habits (not timesPerWeek — those are weekly)
-        let scheduledHabits = habits.filter { habit in
-            guard !isTimesPerWeek(habit.schedule) else { return false }
-            return habit.isScheduled(on: date)
-        }
+        let scheduledHabits = habits.filter { $0.isScheduled(on: date) }
 
         guard !scheduledHabits.isEmpty else { return }
 
@@ -81,40 +71,5 @@ struct DayResetService {
             profile.resetStreak()
             profile.penalizeXP(20)
         }
-    }
-
-    /// Evaluate timesPerWeek habits at the end of the week (Sunday).
-    private func evaluateWeeklyHabits(weekEndingOn sunday: Date, profile: UserProfile, habits: [Habit], calendar: Calendar) {
-        // Find Monday of this week
-        guard let monday = calendar.date(byAdding: .day, value: -6, to: sunday) else { return }
-
-        let weeklyHabits = habits.filter { isTimesPerWeek($0.schedule) }
-
-        for habit in weeklyHabits {
-            guard case .timesPerWeek(let required) = habit.schedule else { continue }
-
-            // Count completed days this week
-            var completedCount = 0
-            var day = monday
-            while day <= sunday {
-                if habit.isCompleted(on: day) {
-                    completedCount += 1
-                }
-                guard let next = calendar.date(byAdding: .day, value: 1, to: day) else { break }
-                day = next
-            }
-
-            if completedCount < required {
-                // Didn't meet weekly target — streak breaks + penalty
-                profile.resetStreak()
-                profile.penalizeXP(20)
-                return // One penalty per week is enough
-            }
-        }
-    }
-
-    private func isTimesPerWeek(_ schedule: Schedule) -> Bool {
-        if case .timesPerWeek = schedule { return true }
-        return false
     }
 }

@@ -123,7 +123,6 @@ enum StatType: String, Codable, CaseIterable, Identifiable {
 enum Schedule: Codable, Equatable {
     case daily
     case specificDays(Set<Weekday>)
-    case timesPerWeek(Int)
 
     var label: String {
         switch self {
@@ -132,21 +131,16 @@ enum Schedule: Codable, Equatable {
         case .specificDays(let days):
             let sorted = days.sorted { $0.sortIndex < $1.sortIndex }
             return sorted.map(\.shortLabel).joined(separator: ", ")
-        case .timesPerWeek(let count):
-            return "\(count)x per week"
         }
     }
 
     /// Whether this habit is scheduled for the given weekday.
-    /// For `timesPerWeek`, always returns true (user picks which days).
     func isScheduled(on day: Weekday) -> Bool {
         switch self {
         case .daily:
             return true
         case .specificDays(let days):
             return days.contains(day)
-        case .timesPerWeek:
-            return true
         }
     }
 }

@@ -11,7 +11,6 @@ struct CreateHabitView: View {
     @State private var stat: StatType = .strength
     @State private var scheduleType: ScheduleType = .daily
     @State private var selectedDays: Set<Weekday> = []
-    @State private var timesPerWeek = 3
     @State private var targetValue = ""
     @State private var unit = ""
     @State private var showIconPicker = false
@@ -19,14 +18,12 @@ struct CreateHabitView: View {
     enum ScheduleType: String, CaseIterable {
         case daily = "Every Day"
         case specificDays = "Specific Days"
-        case timesPerWeek = "X Times / Week"
     }
 
     private var schedule: Schedule {
         switch scheduleType {
         case .daily: return .daily
         case .specificDays: return .specificDays(selectedDays)
-        case .timesPerWeek: return .timesPerWeek(timesPerWeek)
         }
     }
 
@@ -221,39 +218,6 @@ struct CreateHabitView: View {
                             .padding(.top, 4)
                         }
 
-                        if scheduleType == .timesPerWeek {
-                            HStack {
-                                Text("Times per week:")
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundColor(Color(hex: "666666"))
-                                Spacer()
-                                HStack(spacing: 12) {
-                                    Button {
-                                        if timesPerWeek > 1 { timesPerWeek -= 1 }
-                                    } label: {
-                                        Image(systemName: "minus.circle.fill")
-                                            .font(.system(size: 22))
-                                            .foregroundColor(Color(hex: "555555"))
-                                    }
-                                    .buttonStyle(.plain)
-
-                                    Text("\(timesPerWeek)")
-                                        .font(.system(size: 18, weight: .black))
-                                        .foregroundColor(Color(hex: "F0F0F0"))
-                                        .frame(width: 30)
-
-                                    Button {
-                                        if timesPerWeek < 7 { timesPerWeek += 1 }
-                                    } label: {
-                                        Image(systemName: "plus.circle.fill")
-                                            .font(.system(size: 22))
-                                            .foregroundColor(.white)
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                            .padding(.top, 4)
-                        }
                     }
 
                     // ── Create Button ──
