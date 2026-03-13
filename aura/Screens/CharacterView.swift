@@ -337,6 +337,18 @@ struct DebugDatePanel: View {
                     .background(RoundedRectangle(cornerRadius: 6).fill(AppTheme.accentGreen.opacity(0.1)))
             }
             .buttonStyle(.plain)
+
+            Button {
+                UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+            } label: {
+                Text("Redo Onboarding")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(AppTheme.accentPurple)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(RoundedRectangle(cornerRadius: 6).fill(AppTheme.accentPurple.opacity(0.1)))
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
