@@ -28,7 +28,7 @@ struct MainTabView: View {
                 Rectangle()
                     .fill(
                         LinearGradient(
-                            colors: [.clear, AppTheme.tabSeparator.opacity(0.4), .clear],
+                            colors: [.clear, Color.white.opacity(0.06), .clear],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -45,32 +45,17 @@ struct MainTabView: View {
                             }
                         } label: {
                             VStack(spacing: 1.5) {
-                                ZStack {
-                                    if active {
-                                        Circle()
-                                            .fill(AppTheme.tabGlow.opacity(0.12))
-                                            .frame(width: 24, height: 24)
-                                            .blur(radius: 8)
-                                    }
-
-                                    Image(systemName: tabs[i].icon)
-                                        .font(.system(size: 13, weight: active ? .medium : .light))
-                                        .foregroundColor(
-                                            active ? AppTheme.tabActive : AppTheme.tabInactive
-                                        )
-                                        .shadow(
-                                            color: active ? AppTheme.tabGlow.opacity(0.4) : .clear,
-                                            radius: 3
-                                        )
-                                }
+                                Image(systemName: tabs[i].icon)
+                                    .font(.system(size: 13, weight: active ? .semibold : .light))
+                                    .foregroundColor(
+                                        active ? .white : Color(hex: "3A3A3A")
+                                    )
                                 .frame(height: 20)
 
                                 Text(tabs[i].label)
-                                    .font(.system(size: 8, weight: .semibold))
+                                    .font(.system(size: 8, weight: .bold))
                                     .foregroundColor(
-                                        active
-                                            ? AppTheme.tabActive.opacity(0.85)
-                                            : AppTheme.tabInactive.opacity(0.7)
+                                        active ? .white.opacity(0.7) : Color(hex: "3A3A3A").opacity(0.7)
                                     )
                             }
                             .frame(maxWidth: .infinity)
@@ -82,7 +67,7 @@ struct MainTabView: View {
             }
             .padding(.bottom, 20)
             .background(
-                AppTheme.bgTabBar.opacity(0.97)
+                Color(hex: "050505").opacity(0.97)
                     .ignoresSafeArea(edges: .bottom)
             )
         }

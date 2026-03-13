@@ -11,14 +11,11 @@ struct HabitCard: View {
     @State private var apFloatOffset: CGFloat = 0
     @State private var apFloatOpacity: Double = 0
 
-    /// Whether this habit has an explicit completed log today.
-    /// Quit habits use separate logic (no log = going strong, not "completed").
     private var hasBuildOrNumericCompletion: Bool {
         guard habit.type != .quit else { return false }
         return habit.isCompleted(on: appNow())
     }
 
-    /// Whether a quit habit has relapsed today.
     private var hasRelapsedToday: Bool {
         guard habit.type == .quit else { return false }
         return habit.log(for: appNow())?.status == .relapsed
@@ -39,81 +36,96 @@ struct HabitCard: View {
         }
     }
 
+    private var isCompleted: Bool {
+        if habit.type == .quit { return !hasRelapsedToday }
+        return hasBuildOrNumericCompletion
+    }
+
+    /// The stat's color used as a subtle accent
+    private var accent: Color { habit.stat.color }
+
     var body: some View {
         HStack(spacing: 12) {
-            // Cinematic thumbnail
+            // ── Icon with colored tint ──
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(
-                        LinearGradient(
-                            colors: [AppTheme.bgCardBorder, AppTheme.bgCard],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 56, height: 56)
+                    .fill(accent.opacity(0.08))
+                    .frame(width: 50, height: 50)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(habit.stat.color.opacity(0.15), lineWidth: 0.5)
+                            .stroke(accent.opacity(0.12), lineWidth: 0.5)
                     )
 
                 Image(systemName: habit.icon)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(habit.stat.color)
-                    .shadow(color: habit.stat.color.opacity(0.4), radius: 4)
+                    .font(.system(size: 19, weight: .semibold))
+                    .foregroundColor(accent.opacity(0.9))
             }
 
+            // ── Text ──
             VStack(alignment: .leading, spacing: 3) {
                 Text(habit.name)
-                    .font(.system(size: 15, weight: .semibold, design: .serif))
-                    .foregroundColor(AppTheme.textBright)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundColor(.white)
 
                 HStack(spacing: 4) {
                     Text("+\(habit.baseXP)")
-                        .font(.system(size: 12, weight: .semibold, design: .serif))
-                        .foregroundColor(AppTheme.textGold)
-                    Text(habit.stat.label + " AP")
-                        .font(.system(size: 12, weight: .semibold, design: .serif))
-                        .foregroundColor(AppTheme.textGold)
+                        .font(.system(size: 11, weight: .heavy))
+                        .foregroundColor(accent.opacity(0.5))
+                    Text(habit.stat.label.uppercased())
+                        .font(.system(size: 10, weight: .bold))
+                        .tracking(1)
+                        .foregroundColor(Color(hex: "4A4A4A"))
                 }
 
-                // Numeric progress
                 if habit.type == .numeric, let target = habit.targetValue {
                     let current = habit.log(for: appNow())?.value ?? 0
                     let unit = habit.unit ?? ""
                     Text("\(String(format: "%.1f", current))/\(String(format: "%.0f", target)) \(unit)")
-                        .font(.system(size: 10, weight: .medium, design: .serif))
-                        .foregroundColor(AppTheme.textMuted)
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(Color(hex: "4A4A4A"))
                 }
 
-                // Quit habit status
                 if habit.type == .quit {
-                    Text(hasRelapsedToday ? "Relapsed" : "Going strong")
-                        .font(.system(size: 10, weight: .medium, design: .serif))
-                        .foregroundColor(hasRelapsedToday ? AppTheme.accentDanger : AppTheme.accentGreen)
+                    Text(hasRelapsedToday ? "RELAPSED" : "LOCKED IN")
+                        .font(.system(size: 10, weight: .heavy))
+                        .tracking(1)
+                        .foregroundColor(hasRelapsedToday ? Color(hex: "FF3B30") : Color(hex: "4ADE80"))
                 }
             }
 
             Spacer()
 
-            // ── Completion indicator ──
             completionIndicator
         }
-        .padding(14)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(AppTheme.bgCard)
+            RoundedRectangle(cornerRadius: 14)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(hex: "141414"), Color(hex: "0E0E0E")],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(AppTheme.bgCardBorder.opacity(0.5), lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(
+                            LinearGradient(
+                                colors: [accent.opacity(0.10), Color.white.opacity(0.04)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.5
+                        )
                 )
         )
         .overlay(alignment: .trailing) {
             if showAPFloat {
-                Text("+\(habit.baseXP) Aura")
-                    .font(.system(size: 15, weight: .bold, design: .serif))
-                    .foregroundColor(AppTheme.gold)
-                    .shadow(color: AppTheme.gold.opacity(0.5), radius: 6)
+                Text("+\(habit.baseXP)")
+                    .font(.system(size: 16, weight: .black))
+                    .foregroundColor(accent)
+                    .shadow(color: accent.opacity(0.4), radius: 8)
                     .offset(y: apFloatOffset)
                     .opacity(apFloatOpacity)
                     .allowsHitTesting(false)
@@ -164,7 +176,7 @@ struct HabitCard: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .stroke(AppTheme.bgCardBorder, lineWidth: 1.5)
+                            .stroke(Color(hex: "2A2A2A"), lineWidth: 1.5)
                             .frame(width: 32, height: 32)
                     }
                     .frame(width: 44, height: 44)
@@ -175,27 +187,25 @@ struct HabitCard: View {
 
         case .quit:
             if hasRelapsedToday {
-                // Relapsed — show red indicator
                 ZStack {
                     Circle()
-                        .fill(AppTheme.accentDanger.opacity(0.15))
+                        .fill(Color(hex: "FF3B30").opacity(0.12))
                         .frame(width: 32, height: 32)
                     Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(AppTheme.accentDanger)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(Color(hex: "FF3B30"))
                 }
             } else {
-                // Going strong — show relapse button
                 Button {
                     manager.logRelapse(habit)
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(AppTheme.accentDanger.opacity(0.08))
+                            .fill(Color(hex: "FF3B30").opacity(0.06))
                             .frame(width: 44, height: 44)
                         Image(systemName: "exclamationmark.triangle.fill")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(AppTheme.accentDanger.opacity(0.6))
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(Color(hex: "FF3B30").opacity(0.5))
                     }
                     .contentShape(Circle())
                 }
@@ -211,11 +221,11 @@ struct HabitCard: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .stroke(AppTheme.bgCardBorder, lineWidth: 1.5)
+                            .stroke(Color(hex: "2A2A2A"), lineWidth: 1.5)
                             .frame(width: 32, height: 32)
                         Image(systemName: "plus")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(AppTheme.textMuted)
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(Color(hex: "555555"))
                     }
                     .frame(width: 44, height: 44)
                     .contentShape(Circle())
@@ -228,11 +238,11 @@ struct HabitCard: View {
     private var checkmark: some View {
         ZStack {
             Circle()
-                .fill(AppTheme.accentGreen.opacity(0.15))
+                .fill(accent.opacity(0.12))
                 .frame(width: 32, height: 32)
             Image(systemName: "checkmark")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(AppTheme.accentGreen)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(accent)
         }
         .scaleEffect(showCheck ? 1 : 0)
         .onAppear {

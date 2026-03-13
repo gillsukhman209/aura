@@ -4,211 +4,263 @@ struct CharacterView: View {
     @Environment(HabitManager.self) private var manager
     @AppStorage("showDebugPanel") private var showDebugPanel = false
     @State private var showBonus = false
-    @State private var bonusProgress: CGFloat = 0
     @State private var showCreateHabit = false
     @State private var showDailyBonusOverlay = false
     @State private var wasBonusAwarded = false
-    @State private var auraGlowIntensity: CGFloat = 0
+    @State private var headerOpacity: Double = 0
+    @State private var cardsOpacity: Double = 0
 
     var body: some View {
         ZStack {
-            StarfieldBackground(starCount: 250)
+            // ── Pure black base ──
+            Color(hex: "050505").ignoresSafeArea()
 
-            // ── Aura Glow: ambient energy behind content ──
-            AuraGlowBackground(levelInfo: manager.levelInfo, intensity: auraGlowIntensity)
+            // ── Subtle starfield (fewer, dimmer) ──
+            StarfieldBackground(starCount: 80)
+                .opacity(0.25)
 
             VStack(spacing: 0) {
-                // ── App name + actions ──
-                HStack {
-                    Text("Aura")
-                        .font(.custom("Georgia-Bold", size: 22))
-                        .foregroundColor(AppTheme.textBright)
-                        .shadow(color: AppTheme.ringGlow.opacity(0.3), radius: 8)
+                // ══════════════════════════════════════
+                // HEADER
+                // ══════════════════════════════════════
+                HStack(alignment: .center) {
+                    Text("AURA")
+                        .font(.system(size: 24, weight: .black))
+                        .tracking(6)
+                        .foregroundColor(.white)
+
                     Spacer()
 
-                    // ── Streak badge ──
                     if manager.currentStreak > 0 {
-                        HStack(spacing: 4) {
+                        HStack(spacing: 5) {
                             Image(systemName: "flame.fill")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [Color(hex: "FF4500"), AppTheme.accentOrange],
-                                        startPoint: .bottom, endPoint: .top
-                                    )
-                                )
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(.white.opacity(0.85))
                             Text("\(manager.currentStreak)")
-                                .font(.system(size: 14, weight: .bold, design: .serif))
-                                .foregroundColor(AppTheme.accentOrange)
+                                .font(.system(size: 14, weight: .heavy))
+                                .foregroundColor(.white)
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
                         .background(
                             Capsule()
-                                .fill(AppTheme.accentOrange.opacity(0.1))
+                                .fill(Color.white.opacity(0.07))
                                 .overlay(
                                     Capsule()
-                                        .stroke(AppTheme.accentOrange.opacity(0.2), lineWidth: 0.5)
+                                        .stroke(Color.white.opacity(0.10), lineWidth: 0.5)
                                 )
                         )
                     }
 
                     Button { showCreateHabit = true } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 20))
-                            .foregroundColor(AppTheme.gold)
+                        Image(systemName: "plus")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                            .frame(width: 32, height: 32)
+                            .background(
+                                Circle()
+                                    .fill(Color.white.opacity(0.07))
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.white.opacity(0.10), lineWidth: 0.5)
+                                    )
+                            )
                     }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
+                .opacity(headerOpacity)
 
-                // ── XP Ring ──
+                // ══════════════════════════════════════
+                // XP RING
+                // ══════════════════════════════════════
                 XPRing(
                     levelInfo: manager.levelInfo,
                     currentXP: manager.currentLevelXP,
                     maxXP: manager.xpPerLevel
                 )
-                .padding(.top, -8)
+                .padding(.top, -12)
 
-                // ── Rank name ──
-                VStack(spacing: 2) {
-                    Text("Level \(manager.level)")
-                        .font(.system(size: 13, weight: .medium, design: .serif))
-                        .foregroundColor(AppTheme.textMuted)
-                    Text(manager.levelInfo.displayName)
-                        .font(.system(size: 18, weight: .bold, design: .serif))
+                // ══════════════════════════════════════
+                // RANK + LEVEL
+                // ══════════════════════════════════════
+                VStack(spacing: 4) {
+                    Text("LEVEL \(manager.level)")
+                        .font(.system(size: 11, weight: .bold))
+                        .tracking(4)
+                        .foregroundColor(Color(hex: "555555"))
+
+                    Text(manager.levelInfo.displayName.uppercased())
+                        .font(.system(size: 20, weight: .black))
+                        .tracking(3)
                         .foregroundColor(manager.levelInfo.color)
-                        .shadow(color: manager.levelInfo.color.opacity(0.3), radius: 4)
                 }
-                .padding(.top, -8)
-                .padding(.bottom, 4)
+                .padding(.top, -12)
+                .padding(.bottom, 6)
+                .opacity(headerOpacity)
 
-                // ── "Today's Quests" header ──
-                HStack(spacing: 6) {
-                    HStack(spacing: 0) {
-                        Spacer()
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.clear, AppTheme.headerLine.opacity(0.5)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
+                // ══════════════════════════════════════
+                // SECTION DIVIDER
+                // ══════════════════════════════════════
+                HStack(spacing: 12) {
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                colors: [.clear, Color(hex: "2A2A2A")],
+                                startPoint: .leading,
+                                endPoint: .trailing
                             )
-                            .frame(height: 0.5)
-                        Diamond()
-                            .fill(AppTheme.headerDiamond)
-                            .frame(width: 3.5, height: 3.5)
-                    }
+                        )
+                        .frame(height: 0.5)
 
-                    Text("Today's Quests")
-                        .font(.custom("Georgia-Italic", size: 14))
-                        .foregroundColor(AppTheme.textMuted)
-                        .shadow(color: AppTheme.textMuted.opacity(0.3), radius: 4)
+                    Text("DAILY")
+                        .font(.system(size: 10, weight: .heavy))
+                        .tracking(4)
+                        .foregroundColor(Color(hex: "555555"))
                         .fixedSize()
 
-                    HStack(spacing: 0) {
-                        Diamond()
-                            .fill(AppTheme.headerDiamond)
-                            .frame(width: 3.5, height: 3.5)
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [AppTheme.headerLine.opacity(0.5), .clear],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "2A2A2A"), .clear],
+                                startPoint: .leading,
+                                endPoint: .trailing
                             )
-                            .frame(height: 0.5)
-                        Spacer()
-                    }
+                        )
+                        .frame(height: 0.5)
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 6)
+                .padding(.bottom, 8)
+                .opacity(headerOpacity)
 
-                // ── Habit cards ──
+                // ══════════════════════════════════════
+                // PROGRESS COUNTER
+                // ══════════════════════════════════════
+                HStack {
+                    let total = manager.todaysHabits.count
+                    let done = manager.completedTodayCount
+
+                    Text("\(done)/\(total)")
+                        .font(.system(size: 13, weight: .heavy))
+                        .foregroundColor(.white)
+
+                    Text("COMPLETED")
+                        .font(.system(size: 10, weight: .bold))
+                        .tracking(2)
+                        .foregroundColor(Color(hex: "555555"))
+
+                    Spacer()
+
+                    if total > 0 {
+                        GeometryReader { geo in
+                            let frac = total > 0 ? CGFloat(done) / CGFloat(total) : 0
+                            ZStack(alignment: .leading) {
+                                Capsule()
+                                    .fill(Color(hex: "1A1A1A"))
+                                    .frame(height: 3)
+                                Capsule()
+                                    .fill(Color.white.opacity(0.7))
+                                    .frame(width: geo.size.width * frac, height: 3)
+                            }
+                        }
+                        .frame(width: 60, height: 3)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.bottom, 8)
+                .opacity(cardsOpacity)
+
+                // ══════════════════════════════════════
+                // HABIT CARDS
+                // ══════════════════════════════════════
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 8) {
+                    VStack(spacing: 6) {
                         if !manager.todaysHabits.isEmpty {
                             ForEach(manager.todaysHabits) { habit in
                                 HabitCard(habit: habit)
                             }
-
                         } else {
-                            VStack(spacing: 12) {
-                                Image(systemName: "plus.circle.dashed")
-                                    .font(.system(size: 40, weight: .ultraLight))
-                                    .foregroundColor(AppTheme.textSubtle)
-                                Text("No habits yet")
-                                    .font(.custom("Georgia", size: 14))
-                                    .foregroundColor(AppTheme.textMuted)
+                            VStack(spacing: 16) {
+                                Image(systemName: "plus.circle")
+                                    .font(.system(size: 36, weight: .ultraLight))
+                                    .foregroundColor(Color(hex: "333333"))
+                                Text("NO HABITS YET")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .tracking(3)
+                                    .foregroundColor(Color(hex: "555555"))
                                 Button { showCreateHabit = true } label: {
-                                    Text("Create your first habit")
-                                        .font(.system(size: 13, weight: .medium, design: .serif))
-                                        .foregroundColor(AppTheme.tabActive)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
+                                    Text("CREATE HABIT")
+                                        .font(.system(size: 11, weight: .heavy))
+                                        .tracking(2)
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 20)
+                                        .padding(.vertical, 10)
                                         .background(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .fill(AppTheme.tabActive.opacity(0.1))
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color.white.opacity(0.07))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                        .stroke(Color.white.opacity(0.12), lineWidth: 0.5)
+                                                )
                                         )
                                 }
                                 .buttonStyle(.plain)
                             }
-                            .padding(.top, 30)
+                            .padding(.top, 40)
                         }
 
                         // Daily Completion Bonus
                         if manager.allTodayCompleted, !manager.todaysHabits.isEmpty {
                             HStack {
-                                Text("Daily Completion Bonus")
-                                    .font(.system(size: 12, weight: .medium, design: .serif))
-                                    .foregroundColor(AppTheme.textMuted)
+                                Text("DAILY BONUS")
+                                    .font(.system(size: 11, weight: .heavy))
+                                    .tracking(2)
+                                    .foregroundColor(Color(hex: "555555"))
                                 Spacer()
-                                Text("+40 AP")
-                                    .font(.system(size: 13, weight: .bold, design: .serif))
-                                    .foregroundColor(AppTheme.gold)
+                                Text("+40")
+                                    .font(.system(size: 14, weight: .black))
+                                    .foregroundColor(.white)
 
                                 ZStack {
                                     Circle()
-                                        .fill(AppTheme.accentGreen.opacity(0.15))
-                                        .frame(width: 26, height: 26)
+                                        .fill(Color.white.opacity(0.08))
+                                        .frame(width: 24, height: 24)
                                     Image(systemName: "checkmark")
-                                        .font(.system(size: 11, weight: .bold))
-                                        .foregroundColor(AppTheme.accentGreen)
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white)
                                 }
                                 .scaleEffect(showBonus ? 1 : 0)
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
                             .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(AppTheme.bgCard.opacity(0.5))
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color(hex: "0A0A0A"))
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(AppTheme.gold.opacity(0.12), lineWidth: 0.5)
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.white.opacity(0.06), lineWidth: 0.5)
                                     )
                             )
                         }
                     }
                     .padding(.horizontal, 14)
                     .padding(.bottom, 70)
+                    .opacity(cardsOpacity)
                 }
             }
         }
         .onAppear {
             manager.refresh()
             wasBonusAwarded = manager.dailyBonusAwarded
-            withAnimation(.easeOut(duration: 1.2).delay(0.5)) { bonusProgress = 1.0 }
+            withAnimation(.easeOut(duration: 0.6).delay(0.2)) { headerOpacity = 1 }
+            withAnimation(.easeOut(duration: 0.6).delay(0.5)) { cardsOpacity = 1 }
             withAnimation(.spring(response: 0.5, dampingFraction: 0.6).delay(1.2)) { showBonus = true }
-            withAnimation(.easeOut(duration: 1.5)) { auraGlowIntensity = 1.0 }
         }
         .onChange(of: manager.dailyBonusAwarded) { oldVal, newVal in
             if !wasBonusAwarded && newVal {
                 showDailyBonusOverlay = true
                 wasBonusAwarded = true
             } else if !newVal {
-                // New day — reset so the overlay can fire again
                 wasBonusAwarded = false
             }
         }
@@ -220,8 +272,6 @@ struct CharacterView: View {
                 DebugDatePanel(manager: manager)
             }
         }
-
-        // ── Celebration overlays ──
         .overlay {
             if manager.showLevelUpCelebration, let info = manager.celebrationLevelInfo {
                 LevelUpOverlay(levelInfo: info) {
@@ -246,7 +296,7 @@ struct CharacterView: View {
     }
 }
 
-// MARK: - DEBUG: Date Control Panel (remove before release)
+// MARK: - DEBUG: Date Control Panel
 
 struct DebugDatePanel: View {
     let manager: HabitManager
