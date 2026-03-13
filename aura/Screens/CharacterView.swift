@@ -35,7 +35,7 @@ struct CharacterView: View {
                         HStack(spacing: 5) {
                             Image(systemName: "flame.fill")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(.white.opacity(0.85))
+                                .foregroundColor(AppTheme.accentOrange)
                             Text("\(manager.currentStreak)")
                                 .font(.system(size: 14, weight: .heavy))
                                 .foregroundColor(.white)
@@ -44,12 +44,13 @@ struct CharacterView: View {
                         .padding(.vertical, 5)
                         .background(
                             Capsule()
-                                .fill(Color.white.opacity(0.07))
+                                .fill(AppTheme.accentOrange.opacity(0.12))
                                 .overlay(
                                     Capsule()
-                                        .stroke(Color.white.opacity(0.10), lineWidth: 0.5)
+                                        .stroke(AppTheme.accentOrange.opacity(0.25), lineWidth: 0.5)
                                 )
                         )
+                        .shadow(color: AppTheme.accentOrange.opacity(0.3), radius: 8)
                     }
 
                     Button { showCreateHabit = true } label: {

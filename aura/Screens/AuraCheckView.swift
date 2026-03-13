@@ -75,7 +75,7 @@ struct AuraCheckView: View {
         let info = manager.levelInfo
         let stats = manager.characterStats
 
-        return VStack(spacing: 20) {
+        return VStack(spacing: 5) {
             // ── Rank badge ──
             ZStack {
                 Circle()
@@ -87,13 +87,13 @@ struct AuraCheckView: View {
                             endRadius: 55
                         )
                     )
-                    .frame(width: 110, height: 110)
+                    .frame(width: 320, height: 320)
 
                 Image(info.imageName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 80, height: 80)
-                    .shadow(color: info.color.opacity(0.5), radius: 10)
+                    .frame(width: 320, height: 320)
+                    .shadow(color: info.color.opacity(0.5), radius: 20)
             }
 
             // ── Rank name ──
