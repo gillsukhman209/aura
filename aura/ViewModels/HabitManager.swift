@@ -397,6 +397,125 @@ final class HabitManager {
         }
     }
 
+    // MARK: - Mock Data
+
+    func seedMockData() {
+        // Clear existing data
+        let existingHabits = (try? modelContext.fetch(FetchDescriptor<Habit>())) ?? []
+        for h in existingHabits { modelContext.delete(h) }
+        let existingLogs = (try? modelContext.fetch(FetchDescriptor<HabitLog>())) ?? []
+        for l in existingLogs { modelContext.delete(l) }
+        let existingProfiles = (try? modelContext.fetch(FetchDescriptor<UserProfile>())) ?? []
+        for p in existingProfiles { modelContext.delete(p) }
+        save()
+
+        // Create profile
+        let newProfile = UserProfile()
+        newProfile.totalXP = 4200
+        newProfile.currentStreak = 12
+        newProfile.longestStreak = 18
+        newProfile.lastCompletedDate = Calendar.current.date(byAdding: .day, value: -1, to: appNow())
+        var statsDict: [String: Int] = [:]
+        statsDict[StatType.strength.rawValue] = 68
+        statsDict[StatType.focus.rawValue] = 52
+        statsDict[StatType.discipline.rawValue] = 74
+        statsDict[StatType.knowledge.rawValue] = 45
+        statsDict[StatType.energy.rawValue] = 56
+        newProfile.stats = statsDict
+        modelContext.insert(newProfile)
+
+        // Define mock habits
+        let mockHabits: [(name: String, type: HabitType, icon: String, difficulty: Difficulty, stat: StatType, schedule: Schedule, target: Double?, unit: String?)] = [
+            ("Gym", .build, "dumbbell.fill", .major, .strength, .specificDays(Set([.monday, .wednesday, .friday, .saturday])), nil, nil),
+            ("Read 30 min", .build, "book.fill", .medium, .knowledge, .daily, nil, nil),
+            ("Meditate", .build, "brain.head.profile", .medium, .focus, .daily, nil, nil),
+            ("Cold Shower", .build, "snowflake", .minor, .discipline, .daily, nil, nil),
+            ("No Doom Scrolling", .quit, "iphone.slash", .medium, .focus, .daily, nil, nil),
+            ("Drink Water", .numeric, "drop.fill", .minor, .energy, .daily, 3.0, "L"),
+            ("Journal", .build, "pencil.line", .minor, .discipline, .specificDays(Set([.monday, .wednesday, .friday])), nil, nil),
+            ("Run", .build, "figure.run", .major, .energy, .specificDays(Set([.tuesday, .thursday, .saturday])), nil, nil),
+        ]
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: appNow())
+
+        for (i, mock) in mockHabits.enumerated() {
+            let habit = Habit(
+                name: mock.name,
+                type: mock.type,
+                icon: mock.icon,
+                difficulty: mock.difficulty,
+                stat: mock.stat,
+                schedule: mock.schedule,
+                targetValue: mock.target,
+                unit: mock.unit,
+                sortOrder: i
+            )
+            habit.createdAt = calendar.date(byAdding: .day, value: -35, to: today) ?? today
+            modelContext.insert(habit)
+
+            // Generate 30 days of history (not today)
+            for dayOffset in 1...30 {
+                guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: today) else { continue }
+                guard habit.isScheduled(on: date) else { continue }
+
+                // ~85% completion rate
+                let shouldComplete = Int.random(in: 1...100) <= 85
+
+                if mock.type == .quit {
+                    // Quit habits: log only relapses
+                    if !shouldComplete {
+                        let log = HabitLog(habit: habit, date: date, status: .relapsed)
+                        modelContext.insert(log)
+                        habit.logs.append(log)
+                    }
+                } else if mock.type == .numeric {
+                    if shouldComplete {
+                        let value = (mock.target ?? 3.0) * Double.random(in: 0.9...1.3)
+                        let log = HabitLog(habit: habit, date: date, status: .completed, value: value)
+                        modelContext.insert(log)
+                        habit.logs.append(log)
+                    } else {
+                        let value = (mock.target ?? 3.0) * Double.random(in: 0.2...0.6)
+                        let log = HabitLog(habit: habit, date: date, status: .partial, value: value)
+                        modelContext.insert(log)
+                        habit.logs.append(log)
+                    }
+                } else {
+                    // Build habits
+                    if shouldComplete {
+                        let log = HabitLog(habit: habit, date: date, status: .completed)
+                        modelContext.insert(log)
+                        habit.logs.append(log)
+                    }
+                }
+            }
+
+            // Today: complete ~60% of habits
+            if habit.isScheduled(on: today) {
+                let completeToday = i < 5 // first 5 habits completed today
+
+                if mock.type == .quit {
+                    // No log = success for quit
+                } else if mock.type == .numeric && completeToday {
+                    let value = (mock.target ?? 3.0) * Double.random(in: 1.0...1.2)
+                    let log = HabitLog(habit: habit, date: today, status: .completed, value: value)
+                    modelContext.insert(log)
+                    habit.logs.append(log)
+                } else if mock.type == .build && completeToday {
+                    let log = HabitLog(habit: habit, date: today, status: .completed)
+                    modelContext.insert(log)
+                    habit.logs.append(log)
+                }
+            }
+        }
+
+        save()
+        profile = newProfile
+        fetchHabits()
+        syncProfileState()
+    }
+
     // MARK: - Persistence
 
     private func save() {

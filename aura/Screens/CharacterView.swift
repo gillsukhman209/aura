@@ -2,10 +2,10 @@ import SwiftUI
 
 struct CharacterView: View {
     @Environment(HabitManager.self) private var manager
+    @AppStorage("showDebugPanel") private var showDebugPanel = false
     @State private var showBonus = false
     @State private var bonusProgress: CGFloat = 0
     @State private var showCreateHabit = false
-    @State private var showManageHabits = false
     @State private var showDailyBonusOverlay = false
     @State private var wasBonusAwarded = false
     @State private var auraGlowIntensity: CGFloat = 0
@@ -134,18 +134,6 @@ struct CharacterView: View {
                                 HabitCard(habit: habit)
                             }
 
-                            // Manage Habits link
-                            Button { showManageHabits = true } label: {
-                                HStack(spacing: 6) {
-                                    Image(systemName: "slider.horizontal.3")
-                                        .font(.system(size: 11, weight: .medium))
-                                    Text("Manage Habits")
-                                        .font(.system(size: 12, weight: .medium, design: .serif))
-                                }
-                                .foregroundColor(AppTheme.textMuted)
-                                .padding(.top, 4)
-                            }
-                            .buttonStyle(.plain)
                         } else {
                             VStack(spacing: 12) {
                                 Image(systemName: "plus.circle.dashed")
@@ -227,11 +215,10 @@ struct CharacterView: View {
         .sheet(isPresented: $showCreateHabit) {
             CreateHabitView()
         }
-        .fullScreenCover(isPresented: $showManageHabits) {
-            HabitListView()
-        }
         .safeAreaInset(edge: .bottom) {
-            DebugDatePanel(manager: manager)
+            if showDebugPanel {
+                DebugDatePanel(manager: manager)
+            }
         }
 
         // ── Celebration overlays ──
@@ -347,6 +334,18 @@ struct DebugDatePanel: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(RoundedRectangle(cornerRadius: 6).fill(AppTheme.accentPurple.opacity(0.1)))
+            }
+            .buttonStyle(.plain)
+
+            Button {
+                manager.seedMockData()
+            } label: {
+                Text("Seed Data")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(AppTheme.statBlue)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(RoundedRectangle(cornerRadius: 6).fill(AppTheme.statBlue.opacity(0.1)))
             }
             .buttonStyle(.plain)
         }

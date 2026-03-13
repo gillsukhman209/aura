@@ -302,6 +302,8 @@ struct StatsView: View {
 // MARK: - Profile
 struct MoreView: View {
     @State private var showAuraCheck = false
+    @State private var showManageHabits = false
+    @AppStorage("showDebugPanel") private var showDebugPanel = false
 
     var body: some View {
         ZStack {
@@ -320,15 +322,65 @@ struct MoreView: View {
                     }
                     .buttonStyle(.plain)
 
+                    Button { showManageHabits = true } label: {
+                        ProfileMenuItem(icon: "slider.horizontal.3", title: "Manage Habits", color: AppTheme.tabActive)
+                    }
+                    .buttonStyle(.plain)
+
                     NavigationLink(destination: StreakView()) {
                         ProfileMenuItem(icon: "bolt.fill", title: "Streak", color: AppTheme.goldBright)
                     }
                     NavigationLink(destination: ResetView()) {
                         ProfileMenuItem(icon: "arrow.counterclockwise", title: "Reset", color: AppTheme.accentDanger)
                     }
+
+                    // Debug toggle
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showDebugPanel.toggle()
+                        }
+                    } label: {
+                        HStack(spacing: 12) {
+                            ZStack {
+                                Circle()
+                                    .fill(AppTheme.accentOrange.opacity(0.10))
+                                    .frame(width: 34, height: 34)
+                                Image(systemName: "ladybug.fill")
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundColor(AppTheme.accentOrange)
+                            }
+                            Text("Debug Panel")
+                                .font(.custom("Georgia", size: 14))
+                                .foregroundColor(AppTheme.textStat)
+                            Spacer()
+                            Text(showDebugPanel ? "ON" : "OFF")
+                                .font(.system(size: 11, weight: .bold, design: .serif))
+                                .foregroundColor(showDebugPanel ? AppTheme.accentGreen : AppTheme.textSubtle)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 4)
+                                .background(
+                                    Capsule()
+                                        .fill(showDebugPanel ? AppTheme.accentGreen.opacity(0.1) : AppTheme.bgCardBorder.opacity(0.5))
+                                )
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 11)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(AppTheme.bgCard.opacity(0.5))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(AppTheme.bgCardBorder.opacity(0.4), lineWidth: 0.5)
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
                 .fullScreenCover(isPresented: $showAuraCheck) {
                     AuraCheckView()
+                }
+                .fullScreenCover(isPresented: $showManageHabits) {
+                    HabitListView()
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
