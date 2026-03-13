@@ -103,36 +103,9 @@ struct HabitDetailView: View {
                         }
                     }
 
-                    // ── Heatmap ──
+                    // ── Activity ──
                     sectionCard(title: "Activity") {
-                        HeatmapView(
-                            data: analytics.heatmapData(),
-                            accentColor: habit.stat.color
-                        )
-                    }
-
-                    // ── Recent History ──
-                    sectionCard(title: "Recent Logs") {
-                        let recentLogs = habit.logs
-                            .sorted { $0.date > $1.date }
-                            .prefix(10)
-
-                        if recentLogs.isEmpty {
-                            Text("No logs yet")
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(Color(hex: "555555"))
-                        } else {
-                            VStack(spacing: 0) {
-                                ForEach(Array(recentLogs), id: \.id) { log in
-                                    logRow(log)
-                                    if log.id != recentLogs.last?.id {
-                                        Rectangle()
-                                            .fill(Color(hex: "1A1A1A"))
-                                            .frame(height: 0.5)
-                                    }
-                                }
-                            }
-                        }
+                        ActivityGridView(habit: habit)
                     }
 
                     Spacer().frame(height: 40)
@@ -231,50 +204,6 @@ struct HabitDetailView: View {
         if rate >= 0.85 { return AppTheme.accentGreen }
         if rate >= 0.5 { return AppTheme.gold }
         return AppTheme.accentDanger
-    }
-
-    private func logRow(_ log: HabitLog) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: statusIcon(log.status))
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(statusColor(log.status))
-                .frame(width: 20)
-
-            Text(log.date.formatted(.dateTime.month(.abbreviated).day()))
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(Color(hex: "F0F0F0"))
-
-            Spacer()
-
-            if let value = log.value, habit.type == .numeric {
-                Text("\(String(format: "%.1f", value)) \(habit.unit ?? "")")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color(hex: "666666"))
-            }
-
-            Text(log.status.rawValue.capitalized)
-                .font(.system(size: 11, weight: .bold))
-                .foregroundColor(statusColor(log.status))
-        }
-        .padding(.vertical, 8)
-    }
-
-    private func statusIcon(_ status: LogStatus) -> String {
-        switch status {
-        case .completed: return "checkmark.circle.fill"
-        case .partial: return "circle.bottomhalf.filled"
-        case .relapsed: return "xmark.circle.fill"
-        case .skipped: return "minus.circle"
-        }
-    }
-
-    private func statusColor(_ status: LogStatus) -> Color {
-        switch status {
-        case .completed: return AppTheme.accentGreen
-        case .partial: return AppTheme.gold
-        case .relapsed: return AppTheme.accentDanger
-        case .skipped: return Color(hex: "555555")
-        }
     }
 
     private func sectionCard<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
