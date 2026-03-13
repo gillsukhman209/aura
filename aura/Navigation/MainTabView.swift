@@ -245,7 +245,6 @@ struct StatsView: View {
 // MARK: - Profile
 struct MoreView: View {
     @State private var showAuraCheck = false
-    @State private var showManageHabits = false
     @AppStorage("showDebugPanel") private var showDebugPanel = false
 
     var body: some View {
@@ -264,11 +263,6 @@ struct MoreView: View {
 
                     Button { showAuraCheck = true } label: {
                         ProfileMenuItem(icon: "sparkles", title: "Aura Check", color: Color(hex: "B9F2FF"))
-                    }
-                    .buttonStyle(.plain)
-
-                    Button { showManageHabits = true } label: {
-                        ProfileMenuItem(icon: "slider.horizontal.3", title: "Manage Habits", color: .white)
                     }
                     .buttonStyle(.plain)
 
@@ -323,9 +317,6 @@ struct MoreView: View {
                 }
                 .fullScreenCover(isPresented: $showAuraCheck) {
                     AuraCheckView()
-                }
-                .fullScreenCover(isPresented: $showManageHabits) {
-                    HabitListView()
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
