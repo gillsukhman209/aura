@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    let onComplete: () -> Void
+    let onComplete: ([SuggestedHabit]) -> Void
     @State private var vm = OnboardingViewModel()
     @State private var direction: Int = 1 // 1 = forward, -1 = back
     @State private var previousStep: Int = 0
@@ -16,7 +16,7 @@ struct OnboardingView: View {
                 HStack {
                     Spacer()
                     Button("Skip All") {
-                        onComplete()
+                        onComplete([])
                     }
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(AppTheme.textSubtle)
@@ -108,7 +108,8 @@ struct OnboardingView: View {
         case 16: OB_MotivationView(vm: vm)
         case 17: OB_SocialProofView(vm: vm)
         case 18: OB_AchievementView(vm: vm)
-        case 19: OB_FinalView(vm: vm, onComplete: onComplete)
+        case 19: OB_StarterPlanView(vm: vm)
+        case 20: OB_FinalView(vm: vm) { onComplete(vm.selectedStarterHabits) }
         default: EmptyView()
         }
     }
@@ -252,7 +253,7 @@ struct OnboardingNextButton: View {
 
     private var textColor: Color {
         switch style {
-        case .filled: return .white
+        case .filled: return AppTheme.bgPure
         case .white: return AppTheme.bgPure
         case .danger: return .white
         }
