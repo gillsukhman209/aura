@@ -269,6 +269,10 @@ struct MoreView: View {
                     NavigationLink(destination: StreakView()) {
                         ProfileMenuItem(icon: "bolt.fill", title: "Streak", color: AppTheme.accentOrange)
                     }
+                    NavigationLink(destination: NotificationSettingsView()) {
+                        ProfileMenuItem(icon: "bell.fill", title: "Notifications", color: AppTheme.accentOrange)
+                    }
+
                     NavigationLink(destination: ResetView()) {
                         ProfileMenuItem(icon: "arrow.counterclockwise", title: "Reset", color: AppTheme.accentDanger)
                     }

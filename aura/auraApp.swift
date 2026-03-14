@@ -34,6 +34,9 @@ struct auraApp: App {
             }
 
             self.habitManager = HabitManager(modelContext: context)
+
+            // Request notification permission
+            NotificationService.shared.requestPermission()
         } catch {
             fatalError("Failed to initialize app: \(error)")
         }

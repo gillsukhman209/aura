@@ -360,6 +360,15 @@ final class HabitManager {
         syncProfileState()
         save()
 
+        // All done — cancel evening and streak-death roasts
+        NotificationService.shared.cancelCompletionRoasts()
+
+        // Check for streak milestones
+        let milestones = [7, 14, 30, 60, 90, 180, 365]
+        if milestones.contains(currentStreak) {
+            NotificationService.shared.scheduleMilestoneNotification(streak: currentStreak)
+        }
+
         if levelInfo.globalLevel > oldLevel {
             celebrationLevelInfo = levelInfo
             showLevelUpCelebration = true
@@ -372,6 +381,7 @@ final class HabitManager {
     func performDayReset() {
         guard let profile else { return }
         let xpBefore = profile.totalXP
+        let streakBefore = profile.currentStreak
         let service = DayResetService(modelContext: modelContext)
         service.evaluateIfNeeded(profile: profile, habits: habits)
         let xpAfter = profile.totalXP
@@ -381,6 +391,19 @@ final class HabitManager {
         if xpAfter < xpBefore {
             auraLostAmount = xpBefore - xpAfter
             showAuraLost = true
+
+            // Schedule post-penalty roast notification
+            let intensity = RoastIntensity(rawValue: UserDefaults.standard.string(forKey: "roastIntensity") ?? "brutal") ?? .brutal
+            let enabled = UserDefaults.standard.object(forKey: "notificationsEnabled") as? Bool ?? true
+            if enabled {
+                NotificationService.shared.schedulePostPenaltyRoast(
+                    apLost: auraLostAmount,
+                    oldStreak: streakBefore,
+                    missedHabits: [],
+                    rank: levelInfo.displayName,
+                    intensity: intensity
+                )
+            }
         }
     }
 
