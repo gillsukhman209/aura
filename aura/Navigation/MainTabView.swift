@@ -280,15 +280,13 @@ struct MoreView: View {
                         ProfileMenuItem(icon: "arrow.counterclockwise", title: "Reset", color: AppTheme.accentDanger)
                     }
 
-                    // Test Superwall paywall
-                    #if DEBUG
+                    // Upgrade
                     Button {
-                        Superwall.shared.register(placement: "campaign_trigger")
+                        Superwall.shared.register(placement: "aura_main")
                     } label: {
-                        ProfileMenuItem(icon: "creditcard.fill", title: "Test Paywall", color: AppTheme.accentPurple)
+                        ProfileMenuItem(icon: "crown.fill", title: "Upgrade", color: AppTheme.goldBright)
                     }
                     .buttonStyle(.plain)
-                    #endif
 
                     // Debug toggle
                     Button {

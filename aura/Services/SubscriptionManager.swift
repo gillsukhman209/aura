@@ -5,9 +5,9 @@ import SuperwallKit
 class SubscriptionManager: SuperwallDelegate {
     static let shared = SubscriptionManager()
     var isPaidUser: Bool = false
+    var paywallDidDismissWithoutPurchase: Bool = false
 
     private init() {
-        // Set initial state
         isPaidUser = Superwall.shared.subscriptionStatus.isActive
     }
 
@@ -19,6 +19,14 @@ class SubscriptionManager: SuperwallDelegate {
             isPaidUser = true
         case .inactive, .unknown:
             isPaidUser = false
+        }
+    }
+
+    func handleSuperwallEvent(withInfo eventInfo: SuperwallEventInfo) {
+        if case .paywallClose(let paywallInfo) = eventInfo.event {
+            if !Superwall.shared.subscriptionStatus.isActive {
+                paywallDidDismissWithoutPurchase = true
+            }
         }
     }
 
