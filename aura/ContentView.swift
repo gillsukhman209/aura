@@ -29,11 +29,8 @@ struct ContentView: View {
                     showPaywallGate()
                 }
                 .transition(.opacity)
-            } else if isPaid && showMain {
+            } else if isPaid {
                 MainTabView()
-                    .transition(.opacity)
-            } else if isPaid && !showMain {
-                LaunchScreenView(showMain: $showMain)
                     .transition(.opacity)
             } else {
                 // Not paid — show locked screen
