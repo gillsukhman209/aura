@@ -251,6 +251,7 @@ struct CharacterView: View {
             }
         }
         .onAppear {
+            Analytics.screen("Home")
             manager.refresh()
             wasBonusAwarded = manager.dailyBonusAwarded
             withAnimation(.easeOut(duration: 0.6).delay(0.2)) { headerOpacity = 1 }

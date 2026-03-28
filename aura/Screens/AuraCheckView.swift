@@ -321,6 +321,7 @@ struct AuraCheckView: View {
             }
         }
         .onAppear {
+            Analytics.auraCheckViewed()
             withAnimation(.spring(response: 0.6, dampingFraction: 0.75).delay(0.15)) {
                 animateIn = true
             }
@@ -341,6 +342,7 @@ struct AuraCheckView: View {
 
         guard let image = renderer.uiImage else { return }
 
+        Analytics.auraShared()
         let activityVC = UIActivityViewController(activityItems: [image], applicationActivities: nil)
 
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

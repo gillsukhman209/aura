@@ -26,9 +26,17 @@ class OnboardingViewModel {
         currentStep >= 1 && currentStep <= 11
     }
 
+    private let stepNames = [
+        "Welcome", "Satisfaction", "Distractions", "Impact", "QuitHabits",
+        "Reboot", "AnalysisLoading", "Processing", "Results",
+        "PotentialGraph", "Motivation", "Achievement", "Final"
+    ]
+
     func next() {
         guard currentStep < totalSteps - 1 else { return }
         currentStep += 1
+        let name = currentStep < stepNames.count ? stepNames[currentStep] : "Unknown"
+        Analytics.onboardingStep(currentStep, name: name)
     }
 
     func back() {

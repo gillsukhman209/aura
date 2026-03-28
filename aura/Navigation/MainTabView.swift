@@ -44,6 +44,7 @@ struct MainTabView: View {
                             withAnimation(.easeOut(duration: 0.12)) {
                                 selectedTab = i
                             }
+                            Analytics.tabSwitched(to: tabs[i].label)
                         } label: {
                             VStack(spacing: 1.5) {
                                 Image(systemName: tabs[i].icon)
@@ -238,6 +239,7 @@ struct StatsView: View {
             }
         }
         .onAppear {
+            Analytics.screen("Stats")
             withAnimation(.easeOut(duration: 1.0).delay(0.3)) { animateValues = true }
         }
     }

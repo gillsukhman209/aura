@@ -16,6 +16,7 @@ struct OnboardingView: View {
                 HStack {
                     Spacer()
                     Button("Skip All") {
+                        Analytics.onboardingSkipped()
                         onComplete()
                     }
                     .font(.system(size: 11, weight: .medium))
@@ -101,7 +102,7 @@ struct OnboardingView: View {
         case 9:  OB_PotentialGraphView(vm: vm)
         case 10: OB_MotivationView(vm: vm)
         case 11: OB_AchievementView(vm: vm)
-        case 12: OB_FinalView(vm: vm) { onComplete() }
+        case 12: OB_FinalView(vm: vm) { Analytics.onboardingCompleted(); onComplete() }
         default: EmptyView()
         }
     }

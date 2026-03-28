@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import SuperwallKit
+import PostHog
 
 @main
 struct auraApp: App {
@@ -35,6 +36,12 @@ struct auraApp: App {
             }
 
             self.habitManager = HabitManager(modelContext: context)
+
+            // Configure PostHog analytics
+            let phConfig = PostHogConfig(apiKey: "phc_5nCtyU7r4W6BaaVywCI3QA6mrkpoLw4eHnt5DGyt9ZM", host: "https://us.i.posthog.com")
+            phConfig.captureScreenViews = true
+            phConfig.captureApplicationLifecycleEvents = true
+            PostHogSDK.shared.setup(phConfig)
 
             // Request notification permission
             NotificationService.shared.requestPermission()

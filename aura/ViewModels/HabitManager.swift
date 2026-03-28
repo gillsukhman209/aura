@@ -198,6 +198,7 @@ final class HabitManager {
             sortOrder: habits.count
         )
         modelContext.insert(habit)
+        Analytics.habitCreated(name: name, type: type.rawValue, difficulty: difficulty.rawValue)
         save()
         fetchHabits()
     }
@@ -216,6 +217,7 @@ final class HabitManager {
     }
 
     func deleteHabit(_ habit: Habit) {
+        Analytics.habitDeleted(name: habit.name)
         modelContext.delete(habit)
         save()
         fetchHabits()
@@ -233,6 +235,7 @@ final class HabitManager {
         modelContext.insert(log)
         habit.logs.append(log)
         awardXP(for: habit)
+        Analytics.habitCompleted(name: habit.name, type: "build", streak: currentStreak)
         save()
     }
 
@@ -248,6 +251,7 @@ final class HabitManager {
             modelContext.insert(log)
             habit.logs.append(log)
         }
+        Analytics.habitRelapse(name: habit.name)
         save()
     }
 
@@ -355,6 +359,7 @@ final class HabitManager {
         if levelInfo.globalLevel > oldLevel {
             celebrationLevelInfo = levelInfo
             showLevelUpCelebration = true
+            Analytics.levelUp(level: levelInfo.globalLevel, rank: levelInfo.displayName)
         }
 
         // Request review after first ever habit completion

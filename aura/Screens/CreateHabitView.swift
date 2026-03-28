@@ -256,6 +256,7 @@ struct CreateHabitView: View {
         .sheet(isPresented: $showIconPicker) {
             IconPickerView(selectedIcon: $icon)
         }
+        .onAppear { Analytics.screen("CreateHabit") }
     }
 
     // MARK: - Section Card

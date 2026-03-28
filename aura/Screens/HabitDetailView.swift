@@ -114,6 +114,7 @@ struct HabitDetailView: View {
             }
         }
         .onAppear {
+            Analytics.screen("HabitDetail", properties: ["habit_name": habit.name])
             withAnimation(.easeOut(duration: 0.8).delay(0.2)) { animateStats = true }
         }
         .sheet(isPresented: $showEdit) {

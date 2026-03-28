@@ -204,6 +204,7 @@ struct RankView: View {
             }
         }
         .onAppear {
+            Analytics.screen("Rank")
             let info = manager.levelInfo
             let progress = CGFloat(info.currentXP) / CGFloat(max(1, info.xpRequired))
             withAnimation(.easeOut(duration: 1.2).delay(0.3)) {

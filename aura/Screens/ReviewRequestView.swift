@@ -81,6 +81,7 @@ struct ReviewRequestView: View {
                 // Buttons
                 VStack(spacing: 12) {
                     Button {
+                        Analytics.reviewAccepted()
                         isPresented = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                             requestReview()
@@ -102,6 +103,7 @@ struct ReviewRequestView: View {
                     }
 
                     Button {
+                        Analytics.reviewDismissed()
                         isPresented = false
                     } label: {
                         Text("Maybe later")
@@ -116,6 +118,7 @@ struct ReviewRequestView: View {
             }
         }
         .onAppear {
+            Analytics.reviewPromptShown()
             withAnimation(.spring(response: 0.8, dampingFraction: 0.6).delay(0.2)) {
                 heartScale = 1.0
                 heartOpacity = 1
