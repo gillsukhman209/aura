@@ -173,12 +173,12 @@ struct NotificationSettingsView: View {
                             }
                         }
 
-//                        #if DEBUG
-//                        // ── Debug Panel ──
-//                        if showDebugPanel {
-//                            debugPanel
-//                        }
-//                        #endif
+                        #if DEBUG
+                        // ── Debug Panel ──
+                        if showDebugPanel {
+                            debugPanel
+                        }
+                        #endif
                     }
 
                     Spacer().frame(height: 100)

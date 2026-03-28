@@ -5,6 +5,9 @@ struct RankView: View {
     @State private var scoreAnimated: CGFloat = 0
     @State private var showRoadmap = false
     @State private var showAuraCheck = false
+    #if DEBUG
+    @AppStorage("showDebugPanel") private var showDebugPanel = false
+    #endif
 
     var body: some View {
         ZStack {
@@ -218,6 +221,36 @@ struct RankView: View {
                         )
                     }
                     .buttonStyle(.plain)
+
+                    #if DEBUG
+                    Button {
+                        showDebugPanel.toggle()
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: "ladybug.fill")
+                                .font(.system(size: 13))
+                                .foregroundColor(AppTheme.accentOrange)
+                            Text("Debug Panel")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(Color(hex: "C0C0C0"))
+                            Spacer()
+                            Text(showDebugPanel ? "ON" : "OFF")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(showDebugPanel ? AppTheme.accentGreen : Color(hex: "555555"))
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(hex: "0A0A0A"))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    #endif
 
                     Spacer().frame(height: 100)
                 }

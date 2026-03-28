@@ -12,19 +12,19 @@ struct OnboardingView: View {
 
             VStack(spacing: 0) {
                 // DEBUG: Skip entire onboarding
-//                #if DEBUG
-//                HStack {
-//                    Spacer()
-//                    Button("Skip All") {
-//                        Analytics.onboardingSkipped()
-//                        onComplete()
-//                    }
-//                    .font(.system(size: 11, weight: .medium))
-//                    .foregroundColor(AppTheme.textSubtle)
-//                    .padding(.trailing, 16)
-//                    .padding(.top, 4)
-//                }
-//                #endif
+                #if DEBUG
+                HStack {
+                    Spacer()
+                    Button("Skip All") {
+                        Analytics.onboardingSkipped()
+                        onComplete()
+                    }
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(AppTheme.textSubtle)
+                    .padding(.trailing, 16)
+                    .padding(.top, 4)
+                }
+                #endif
                 // MARK: - Top Bar (progress + back + XP)
                 if vm.showProgressBar || vm.showBackButton {
                     HStack(spacing: 12) {
