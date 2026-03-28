@@ -187,7 +187,7 @@ struct XPRing: View {
                     .foregroundColor(AppTheme.textGold)
                     .shadow(color: AppTheme.textGold.opacity(0.3), radius: 4)
                     .tracking(2)
-                    .offset(y: dia / 2 - 34)
+                    .offset(y: dia / 2 - 50)
             }
         }
         .frame(width: dia + 120, height: dia + 100)

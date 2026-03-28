@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    let onComplete: ([SuggestedHabit]) -> Void
+    let onComplete: () -> Void
     @State private var vm = OnboardingViewModel()
     @State private var direction: Int = 1 // 1 = forward, -1 = back
     @State private var previousStep: Int = 0
@@ -16,7 +16,7 @@ struct OnboardingView: View {
                 HStack {
                     Spacer()
                     Button("Skip All") {
-                        onComplete([])
+                        onComplete()
                     }
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(AppTheme.textSubtle)
@@ -91,25 +91,17 @@ struct OnboardingView: View {
         switch vm.currentStep {
         case 0:  OB_WelcomeView(vm: vm)
         case 1:  OB_SatisfactionView(vm: vm)
-        case 2:  OB_LifeGoalView(vm: vm)
-        case 3:  OB_DistractionsView(vm: vm)
-        case 4:  OB_ImpactView(vm: vm)
-        case 5:  OB_SymptomsView(vm: vm)
-        case 6:  OB_QuitHabitsView(vm: vm)
-        case 7:  OB_RoutineView(vm: vm)
-        case 8:  OB_ProductivityView(vm: vm)
-        case 9:  OB_SleepView(vm: vm)
-        case 10: OB_ExerciseView(vm: vm)
-        case 11: OB_RebootView(vm: vm)
-        case 12: OB_AnalysisLoadingView(vm: vm)
-        case 13: OB_ProcessingView(vm: vm)
-        case 14: OB_ResultsView(vm: vm)
-        case 15: OB_PotentialGraphView(vm: vm)
-        case 16: OB_MotivationView(vm: vm)
-        case 17: OB_SocialProofView(vm: vm)
-        case 18: OB_AchievementView(vm: vm)
-        case 19: OB_StarterPlanView(vm: vm)
-        case 20: OB_FinalView(vm: vm) { onComplete(vm.selectedStarterHabits) }
+        case 2:  OB_DistractionsView(vm: vm)
+        case 3:  OB_ImpactView(vm: vm)
+        case 4:  OB_QuitHabitsView(vm: vm)
+        case 5:  OB_RebootView(vm: vm)
+        case 6:  OB_AnalysisLoadingView(vm: vm)
+        case 7:  OB_ProcessingView(vm: vm)
+        case 8:  OB_ResultsView(vm: vm)
+        case 9:  OB_PotentialGraphView(vm: vm)
+        case 10: OB_MotivationView(vm: vm)
+        case 11: OB_AchievementView(vm: vm)
+        case 12: OB_FinalView(vm: vm) { onComplete() }
         default: EmptyView()
         }
     }

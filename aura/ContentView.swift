@@ -16,8 +16,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if !hasCompletedOnboarding {
-                OnboardingView { selectedHabits in
-                    createStarterHabits(selectedHabits)
+                OnboardingView {
                     withAnimation(.easeInOut(duration: 0.6)) {
                         hasCompletedOnboarding = true
                         showMain = true
@@ -55,21 +54,6 @@ struct ContentView: View {
         .onAppear {
             manager.performDayReset()
             rescheduleNotifications()
-        }
-    }
-
-    private func createStarterHabits(_ habits: [SuggestedHabit]) {
-        for habit in habits {
-            manager.createHabit(
-                name: habit.name,
-                type: habit.type,
-                icon: habit.icon,
-                difficulty: habit.difficulty,
-                stat: habit.stat,
-                schedule: habit.schedule,
-                targetValue: habit.targetValue,
-                unit: habit.unit
-            )
         }
     }
 

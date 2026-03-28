@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import SuperwallKit
 
 @main
 struct auraApp: App {
@@ -37,6 +38,10 @@ struct auraApp: App {
 
             // Request notification permission
             NotificationService.shared.requestPermission()
+
+            // Configure Superwall
+            Superwall.configure(apiKey: "YOUR_SUPERWALL_API_KEY")
+            Superwall.shared.delegate = SubscriptionManager.shared
         } catch {
             fatalError("Failed to initialize app: \(error)")
         }

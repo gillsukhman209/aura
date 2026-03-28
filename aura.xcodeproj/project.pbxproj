@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1AB4BFFF2F775CF3008674A7 /* SuperwallKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1AB4BFFE2F775CF3008674A7 /* SuperwallKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1A9500392F60EC3D000CF182 /* aura.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = aura.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1AB4BFFF2F775CF3008674A7 /* SuperwallKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = aura;
 			packageProductDependencies = (
+				1AB4BFFE2F775CF3008674A7 /* SuperwallKit */,
 			);
 			productName = aura;
 			productReference = 1A9500392F60EC3D000CF182 /* aura.app */;
@@ -78,7 +84,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2630;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					1A9500382F60EC3D000CF182 = {
 						CreatedOnToolsVersion = 26.3;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 1A9500302F60EC3C000CF182;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1AB4BFFD2F775CF3008674A7 /* XCRemoteSwiftPackageReference "Superwall-iOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1A95003A2F60EC3D000CF182 /* Products */;
 			projectDirPath = "";
@@ -184,6 +193,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -241,6 +251,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -332,6 +343,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1AB4BFFD2F775CF3008674A7 /* XCRemoteSwiftPackageReference "Superwall-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/superwall/Superwall-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.14.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1AB4BFFE2F775CF3008674A7 /* SuperwallKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1AB4BFFD2F775CF3008674A7 /* XCRemoteSwiftPackageReference "Superwall-iOS" */;
+			productName = SuperwallKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1A9500312F60EC3D000CF182 /* Project object */;
 }
