@@ -4,6 +4,7 @@ struct RankView: View {
     @Environment(HabitManager.self) private var manager
     @State private var scoreAnimated: CGFloat = 0
     @State private var showRoadmap = false
+    @State private var showAuraCheck = false
 
     var body: some View {
         ZStack {
@@ -95,18 +96,18 @@ struct RankView: View {
                         .frame(height: 0.5)
                         .padding(.horizontal, 20)
 
-                    // ── View All Levels button ──
-                    Button { showRoadmap = true } label: {
+                    // ── Aura Check button ──
+                    Button { showAuraCheck = true } label: {
                         HStack {
-                            Image(systemName: "list.number")
+                            Image(systemName: "sparkles")
                                 .font(.system(size: 14, weight: .medium))
-                            Text("View All Levels")
+                            Text("Aura Check")
                                 .font(.system(size: 14, weight: .semibold))
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 11, weight: .semibold))
                         }
-                        .foregroundColor(Color(hex: "888888"))
+                        .foregroundColor(Color(hex: "B9F2FF"))
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
                         .background(
@@ -114,16 +115,11 @@ struct RankView: View {
                                 .fill(Color(hex: "0A0A0A"))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
+                                        .stroke(Color(hex: "B9F2FF").opacity(0.2), lineWidth: 0.8)
                                 )
                         )
                     }
                     .buttonStyle(.plain)
-
-                    Rectangle()
-                        .fill(Color(hex: "1A1A1A"))
-                        .frame(height: 0.5)
-                        .padding(.horizontal, 20)
 
                     // ── Rank tier preview ──
                     Text("RANK TIERS")
@@ -198,6 +194,31 @@ struct RankView: View {
                         }
                     }
 
+                    // ── View All Levels button ──
+                    Button { showRoadmap = true } label: {
+                        HStack {
+                            Image(systemName: "list.number")
+                                .font(.system(size: 14, weight: .medium))
+                            Text("View All Levels")
+                                .font(.system(size: 14, weight: .semibold))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                        }
+                        .foregroundColor(Color(hex: "888888"))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(hex: "0A0A0A"))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+
                     Spacer().frame(height: 100)
                 }
                 .padding(.horizontal, 20)
@@ -213,6 +234,9 @@ struct RankView: View {
         }
         .fullScreenCover(isPresented: $showRoadmap) {
             LevelRoadmapView()
+        }
+        .fullScreenCover(isPresented: $showAuraCheck) {
+            AuraCheckView()
         }
     }
 }

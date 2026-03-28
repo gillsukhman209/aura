@@ -8,7 +8,6 @@ struct MainTabView: View {
         ("house.fill", "Home"),
         ("chart.bar.fill", "Stats"),
         ("diamond.fill", "Rank"),
-        ("person.fill", "Profile"),
     ]
 
     var body: some View {
@@ -19,7 +18,6 @@ struct MainTabView: View {
                 case 0: CharacterView()
                 case 1: StatsView()
                 case 2: RankView()
-                case 3: NavigationStack { MoreView() }
                 default: CharacterView()
                 }
             }
@@ -288,47 +286,49 @@ struct MoreView: View {
                     }
                     .buttonStyle(.plain)
 
-                    // Debug toggle
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showDebugPanel.toggle()
-                        }
-                    } label: {
-                        HStack(spacing: 12) {
-                            ZStack {
-                                Circle()
-                                    .fill(AppTheme.accentOrange.opacity(0.10))
-                                    .frame(width: 34, height: 34)
-                                Image(systemName: "ladybug.fill")
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundColor(AppTheme.accentOrange)
-                            }
-                            Text("Debug Panel")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(Color(hex: "C0C0C0"))
-                            Spacer()
-                            Text(showDebugPanel ? "ON" : "OFF")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(showDebugPanel ? AppTheme.accentGreen : Color(hex: "555555"))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(
-                                    Capsule()
-                                        .fill(showDebugPanel ? AppTheme.accentGreen.opacity(0.1) : Color(hex: "1A1A1A"))
-                                )
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 11)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color(hex: "0A0A0A"))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
-                                )
-                        )
-                    }
-                    .buttonStyle(.plain)
+//                    #if DEBUG
+//                    // Debug toggle
+//                    Button {
+//                        withAnimation(.easeInOut(duration: 0.2)) {
+//                            showDebugPanel.toggle()
+//                        }
+//                    } label: {
+//                        HStack(spacing: 12) {
+//                            ZStack {
+//                                Circle()
+//                                    .fill(AppTheme.accentOrange.opacity(0.10))
+//                                    .frame(width: 34, height: 34)
+//                                Image(systemName: "ladybug.fill")
+//                                    .font(.system(size: 13, weight: .medium))
+//                                    .foregroundColor(AppTheme.accentOrange)
+//                            }
+//                            Text("Debug Panel")
+//                                .font(.system(size: 14, weight: .semibold))
+//                                .foregroundColor(Color(hex: "C0C0C0"))
+//                            Spacer()
+//                            Text(showDebugPanel ? "ON" : "OFF")
+//                                .font(.system(size: 10, weight: .bold))
+//                                .foregroundColor(showDebugPanel ? AppTheme.accentGreen : Color(hex: "555555"))
+//                                .padding(.horizontal, 10)
+//                                .padding(.vertical, 4)
+//                                .background(
+//                                    Capsule()
+//                                        .fill(showDebugPanel ? AppTheme.accentGreen.opacity(0.1) : Color(hex: "1A1A1A"))
+//                                )
+//                        }
+//                        .padding(.horizontal, 14)
+//                        .padding(.vertical, 11)
+//                        .background(
+//                            RoundedRectangle(cornerRadius: 10)
+//                                .fill(Color(hex: "0A0A0A"))
+//                                .overlay(
+//                                    RoundedRectangle(cornerRadius: 10)
+//                                        .stroke(Color.white.opacity(0.05), lineWidth: 0.5)
+//                                )
+//                        )
+//                    }
+//                    .buttonStyle(.plain)
+//                    #endif
                 }
                 .fullScreenCover(isPresented: $showAuraCheck) {
                     AuraCheckView()

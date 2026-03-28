@@ -269,11 +269,13 @@ struct CharacterView: View {
         .sheet(isPresented: $showCreateHabit) {
             CreateHabitView()
         }
-        .safeAreaInset(edge: .bottom) {
-            if showDebugPanel {
-                DebugDatePanel(manager: manager)
-            }
-        }
+//        #if DEBUG
+//        .safeAreaInset(edge: .bottom) {
+//            if showDebugPanel {
+//                DebugDatePanel(manager: manager)
+//            }
+//        }
+//        #endif
         .overlay {
             if manager.showLevelUpCelebration, let info = manager.celebrationLevelInfo {
                 LevelUpOverlay(levelInfo: info) {
