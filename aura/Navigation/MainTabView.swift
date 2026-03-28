@@ -1,4 +1,5 @@
 import SwiftUI
+import SuperwallKit
 
 struct MainTabView: View {
     @State private var selectedTab = 0
@@ -276,6 +277,16 @@ struct MoreView: View {
                     NavigationLink(destination: ResetView()) {
                         ProfileMenuItem(icon: "arrow.counterclockwise", title: "Reset", color: AppTheme.accentDanger)
                     }
+
+                    // Test Superwall paywall
+                    #if DEBUG
+                    Button {
+                        Superwall.shared.register(placement: "campaign_trigger")
+                    } label: {
+                        ProfileMenuItem(icon: "creditcard.fill", title: "Test Paywall", color: AppTheme.accentPurple)
+                    }
+                    .buttonStyle(.plain)
+                    #endif
 
                     // Debug toggle
                     Button {

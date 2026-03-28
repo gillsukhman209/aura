@@ -40,7 +40,7 @@ struct auraApp: App {
             NotificationService.shared.requestPermission()
 
             // Configure Superwall
-            Superwall.configure(apiKey: "YOUR_SUPERWALL_API_KEY")
+            Superwall.configure(apiKey: "pk_tEFN-xARl1D3Cv-yil8CH") // Use your pk_ key from dashboard
             Superwall.shared.delegate = SubscriptionManager.shared
         } catch {
             fatalError("Failed to initialize app: \(error)")
