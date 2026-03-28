@@ -12,6 +12,7 @@ struct ContentView: View {
     @AppStorage("roastIntensity") private var intensityRaw = RoastIntensity.brutal.rawValue
     @AppStorage("inactivityRoasts") private var inactivityEnabled = true
     @State private var showMain = false
+    @State private var showReviewRequest = false
 
     var body: some View {
         Group {
@@ -54,6 +55,15 @@ struct ContentView: View {
         .onAppear {
             manager.performDayReset()
             rescheduleNotifications()
+        }
+        .onChange(of: manager.shouldRequestReview) { _, shouldRequest in
+            if shouldRequest {
+                showReviewRequest = true
+                manager.dismissReviewRequest()
+            }
+        }
+        .fullScreenCover(isPresented: $showReviewRequest) {
+            ReviewRequestView(isPresented: $showReviewRequest)
         }
     }
 

@@ -328,6 +328,13 @@ final class HabitManager {
         celebrationLevelInfo = nil
     }
 
+    /// Set to true after the user's first ever habit completion to prompt a review.
+    private(set) var shouldRequestReview: Bool = false
+
+    func dismissReviewRequest() {
+        shouldRequestReview = false
+    }
+
     /// Set to true when aura is lost — UI reads this to show negative feedback.
     private(set) var showAuraLost: Bool = false
     private(set) var auraLostAmount: Int = 0
@@ -348,6 +355,15 @@ final class HabitManager {
         if levelInfo.globalLevel > oldLevel {
             celebrationLevelInfo = levelInfo
             showLevelUpCelebration = true
+        }
+
+        // Request review after first ever habit completion
+        if !UserDefaults.standard.bool(forKey: "hasRequestedReview") {
+            UserDefaults.standard.set(true, forKey: "hasRequestedReview")
+            // Delay so the user sees the XP animation first
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                self?.shouldRequestReview = true
+            }
         }
     }
 
