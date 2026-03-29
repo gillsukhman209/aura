@@ -15,9 +15,7 @@ struct ContentView: View {
     @State private var showMain = false
     @State private var showReviewRequest = false
 
-    private var isPaid: Bool {
-        Superwall.shared.subscriptionStatus.isActive
-    }
+    private var subscription = SubscriptionManager.shared
 
     var body: some View {
         Group {
@@ -29,20 +27,18 @@ struct ContentView: View {
                     showPaywallGate()
                 }
                 .transition(.opacity)
-            } else if isPaid {
+            } else if subscription.isPaidUser {
                 MainTabView()
                     .transition(.opacity)
             } else {
                 // Not paid — show locked screen
                 LockedView {
-                    withAnimation(.easeInOut(duration: 0.6)) {
-                        showMain = true
-                    }
+                    // Will auto-navigate when subscription.isPaidUser becomes true
                 }
                 .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.6), value: showMain)
+        .animation(.easeInOut(duration: 0.6), value: subscription.isPaidUser)
         .animation(.easeInOut(duration: 0.6), value: hasCompletedOnboarding)
         .preferredColorScheme(.dark)
         .onChange(of: scenePhase) { _, newPhase in

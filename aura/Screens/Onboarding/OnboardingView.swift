@@ -11,7 +11,7 @@ struct OnboardingView: View {
             StarfieldBackground(starCount: 200)
 
             VStack(spacing: 0) {
-                // DEBUG: Skip entire onboarding
+/*  DEBUG DISABLED FOR TESTING
                 #if DEBUG
                 HStack {
                     Spacer()
@@ -25,6 +25,7 @@ struct OnboardingView: View {
                     .padding(.top, 4)
                 }
                 #endif
+*/
                 // MARK: - Top Bar (progress + back + XP)
                 if vm.showProgressBar || vm.showBackButton {
                     HStack(spacing: 12) {

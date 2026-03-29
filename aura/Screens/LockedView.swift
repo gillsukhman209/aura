@@ -69,7 +69,7 @@ struct LockedView: View {
 
                 // Title
                 VStack(spacing: 10) {
-                    Text("Unlock Your Full Potential")
+                    Text("Subscribe to Unlock")
                         .font(.system(size: 26, weight: .bold, design: .serif))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
@@ -148,7 +148,7 @@ struct LockedView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "crown.fill")
                                 .font(.system(size: 14))
-                            Text("Unlock Aura")
+                            Text("View Plans")
                                 .font(.system(size: 16, weight: .bold))
                         }
                         .foregroundColor(.black)
@@ -167,10 +167,7 @@ struct LockedView: View {
                         )
                     }
 
-                    Text("Cancel anytime. No hidden fees.")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color(hex: "555555"))
-                }
+                            }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 40)
                 .opacity(buttonOpacity)

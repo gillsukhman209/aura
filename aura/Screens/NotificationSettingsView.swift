@@ -173,12 +173,11 @@ struct NotificationSettingsView: View {
                             }
                         }
 
-                        #if DEBUG
-                        // ── Debug Panel ──
+/*  DEBUG DISABLED FOR TESTING
                         if showDebugPanel {
                             debugPanel
                         }
-                        #endif
+*/
                     }
 
                     Spacer().frame(height: 100)
