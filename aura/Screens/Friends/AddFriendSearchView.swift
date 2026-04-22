@@ -11,12 +11,8 @@ struct AddFriendSearchView: View {
     @State private var sentToUIDs: Set<String> = []
 
     var body: some View {
-        ZStack {
-            AppTheme.bgPure.ignoresSafeArea()
-
+        NavigationStack {
             VStack(spacing: 16) {
-                header
-
                 searchField
 
                 if isSearching {
@@ -40,28 +36,25 @@ struct AddFriendSearchView: View {
                     }
                 }
 
-                Spacer()
+                Spacer(minLength: 0)
             }
+            .padding(.top, 12)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .background(AppTheme.bgPure.ignoresSafeArea())
+            .navigationTitle("Add Friend")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                        .foregroundColor(AppTheme.textMuted)
+                }
+            }
+            .toolbarBackground(AppTheme.bgPure, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
         }
         .presentationDetents([.large])
         .preferredColorScheme(.dark)
-    }
-
-    private var header: some View {
-        HStack {
-            Button("Close") { dismiss() }
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(AppTheme.textMuted)
-            Spacer()
-            Text("ADD FRIEND")
-                .font(.system(size: 11, weight: .bold))
-                .tracking(4)
-                .foregroundColor(.white)
-            Spacer()
-            Color.clear.frame(width: 40)
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 14)
     }
 
     private var searchField: some View {

@@ -262,6 +262,42 @@ struct RankView: View {
                         )
                     }
                     .buttonStyle(.plain)
+
+                    Button {
+                        manager.debugAddXP(5000)
+                        let info = manager.levelInfo
+                        let progress = CGFloat(info.currentXP) / CGFloat(max(1, info.xpRequired))
+                        withAnimation(.easeOut(duration: 0.6)) {
+                            scoreAnimated = progress
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "bolt.fill")
+                                .font(.system(size: 14, weight: .medium))
+                            Text("+5,000 AP")
+                                .font(.system(size: 14, weight: .semibold))
+                            Spacer()
+                            Text("DEBUG")
+                                .font(.system(size: 9, weight: .bold))
+                                .tracking(2)
+                                .foregroundColor(.black)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .background(Capsule().fill(AppTheme.accentOrange))
+                        }
+                        .foregroundColor(AppTheme.accentOrange)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(AppTheme.accentOrange.opacity(0.08))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(AppTheme.accentOrange.opacity(0.3), lineWidth: 0.5)
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
                     #endif
 
                     Spacer().frame(height: 100)

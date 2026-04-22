@@ -467,6 +467,14 @@ final class HabitManager {
         profile?.addXP(amount)
         syncProfileState()
         save()
+        RemoteProfileService.shared.applyDelta(
+            xpDelta: amount,
+            stat: nil,
+            statDelta: 0,
+            currentStreak: profile?.currentStreak,
+            longestStreak: profile?.longestStreak,
+            lastCompletedDate: profile?.lastCompletedDate
+        )
         if levelInfo.globalLevel > oldLevel {
             celebrationLevelInfo = levelInfo
             showLevelUpCelebration = true
