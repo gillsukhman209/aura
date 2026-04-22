@@ -99,11 +99,7 @@ struct ContentView: View {
     }
 
     private func showPaywallGate() {
-        #if DEBUG
-        return
-        #else
         Superwall.shared.register(placement: "aura_main")
-        #endif
     }
 
     private func startFriendsServices() {

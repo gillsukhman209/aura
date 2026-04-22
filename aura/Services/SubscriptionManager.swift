@@ -7,14 +7,9 @@ class SubscriptionManager: SuperwallDelegate {
     var isPaidUser: Bool = false
     var paywallDidDismissWithoutPurchase: Bool = false
 
-    /// Debug builds always unlock the app so we can iterate without hitting the paywall.
-    static let debugUnlock: Bool = {
-        #if DEBUG
-        return true
-        #else
-        return false
-        #endif
-    }()
+    /// Debug bypass for the paywall. Set back to `true` wrapped in `#if DEBUG`
+    /// to skip Superwall during iteration.
+    static let debugUnlock: Bool = false
 
     private init() {
         isPaidUser = Self.debugUnlock || Superwall.shared.subscriptionStatus.isActive
