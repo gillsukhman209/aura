@@ -298,6 +298,37 @@ struct RankView: View {
                         )
                     }
                     .buttonStyle(.plain)
+
+                    Button {
+                        TutorialCoordinator.shared.restart()
+                    } label: {
+                        HStack {
+                            Image(systemName: "graduationcap.fill")
+                                .font(.system(size: 14, weight: .medium))
+                            Text("Replay Tutorial")
+                                .font(.system(size: 14, weight: .semibold))
+                            Spacer()
+                            Text("DEBUG")
+                                .font(.system(size: 9, weight: .bold))
+                                .tracking(2)
+                                .foregroundColor(.black)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
+                                .background(Capsule().fill(AppTheme.accentPurple))
+                        }
+                        .foregroundColor(AppTheme.accentPurple)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(AppTheme.accentPurple.opacity(0.08))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(AppTheme.accentPurple.opacity(0.3), lineWidth: 0.5)
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
                     #endif
 
                     Spacer().frame(height: 100)

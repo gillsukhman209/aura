@@ -32,6 +32,8 @@ struct ContentView: View {
                         hasCompletedOnboarding = true
                     }
                     showPaywallGate()
+                    // Kick off the first-launch tutorial once the main UI appears.
+                    TutorialCoordinator.shared.startIfNeeded()
                 }
                 .transition(.opacity)
             } else if !auth.isReady {
@@ -48,7 +50,11 @@ struct ContentView: View {
             } else if subscription.isPaidUser {
                 MainTabView()
                     .transition(.opacity)
-                    .onAppear { startFriendsServices() }
+                    .onAppear {
+                        startFriendsServices()
+                        // Covers users who completed onboarding pre-tutorial update.
+                        TutorialCoordinator.shared.startIfNeeded()
+                    }
             } else {
                 // Not paid — show locked screen
                 LockedView {

@@ -53,7 +53,9 @@ struct CharacterView: View {
                         .shadow(color: AppTheme.accentOrange.opacity(0.3), radius: 8)
                     }
 
-                    Button { showCreateHabit = true } label: {
+                    Button {
+                        openCreateHabit()
+                    } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 14, weight: .bold))
                             .foregroundColor(.white)
@@ -67,6 +69,7 @@ struct CharacterView: View {
                                     )
                             )
                     }
+                    .tutorialAnchor(.createHabitButton)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -189,7 +192,9 @@ struct CharacterView: View {
                                     .font(.system(size: 12, weight: .bold))
                                     .tracking(3)
                                     .foregroundColor(Color(hex: "555555"))
-                                Button { showCreateHabit = true } label: {
+                                Button {
+                                    openCreateHabit()
+                                } label: {
                                     Text("CREATE HABIT")
                                         .font(.system(size: 11, weight: .heavy))
                                         .tracking(2)
@@ -206,6 +211,7 @@ struct CharacterView: View {
                                         )
                                 }
                                 .buttonStyle(.plain)
+                                .tutorialAnchor(.createHabitButton)
                             }
                             .padding(.top, 40)
                         }
@@ -269,6 +275,7 @@ struct CharacterView: View {
         .sheet(isPresented: $showCreateHabit) {
             CreateHabitView()
         }
+        .tutorialOverlay()
 /*  DEBUG DISABLED FOR TESTING
         .safeAreaInset(edge: .bottom) {
             if showDebugPanel {
@@ -296,6 +303,16 @@ struct CharacterView: View {
                     manager.dismissAuraLost()
                 }
             }
+        }
+    }
+
+    /// Open the Create Habit sheet and, if the tutorial is on step 1, advance it so the
+    /// sheet's highlighting picks up at the name field.
+    private func openCreateHabit() {
+        showCreateHabit = true
+        if TutorialCoordinator.shared.isActive,
+           TutorialCoordinator.shared.currentStep == .createHabitButton {
+            TutorialCoordinator.shared.advance()
         }
     }
 }

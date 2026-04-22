@@ -40,6 +40,7 @@ struct CreateHabitView: View {
         ZStack {
             Color(hex: "050505").ignoresSafeArea()
 
+            ScrollViewReader { scrollProxy in
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
                     // ── Header ──
@@ -78,6 +79,7 @@ struct CreateHabitView: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .tutorialAnchor(.habitIcon)
 
                         TextField("Habit name", text: $name)
                             .font(.system(size: 17, weight: .semibold))
@@ -91,7 +93,9 @@ struct CreateHabitView: View {
                                             .stroke(Color(hex: "1E1E1E"), lineWidth: 0.5)
                                     )
                             )
+                            .tutorialAnchor(.habitName)
                     }
+                    .id(TutorialCoordinator.Step.habitName)
 
                     // ── Type ──
                     sectionCard(title: "Type") {
@@ -111,6 +115,8 @@ struct CreateHabitView: View {
                             .foregroundColor(Color(hex: "444444"))
                             .padding(.top, 2)
                     }
+                    .tutorialAnchor(.habitType)
+                    .id(TutorialCoordinator.Step.habitType)
 
                     // ── Numeric fields ──
                     if type == .numeric {
@@ -137,6 +143,8 @@ struct CreateHabitView: View {
                                     )
                             }
                         }
+                        .tutorialAnchor(.numericTarget)
+                        .id(TutorialCoordinator.Step.numericTarget)
                     }
 
                     // ── Difficulty ──
@@ -152,6 +160,8 @@ struct CreateHabitView: View {
                             }
                         }
                     }
+                    .tutorialAnchor(.difficulty)
+                    .id(TutorialCoordinator.Step.difficulty)
 
                     // ── Stat ──
                     sectionCard(title: "Stat") {
@@ -181,6 +191,8 @@ struct CreateHabitView: View {
                             }
                         }
                     }
+                    .tutorialAnchor(.stat)
+                    .id(TutorialCoordinator.Step.stat)
 
                     // ── Schedule ──
                     sectionCard(title: "Schedule") {
@@ -219,6 +231,8 @@ struct CreateHabitView: View {
                         }
 
                     }
+                    .tutorialAnchor(.schedule)
+                    .id(TutorialCoordinator.Step.schedule)
 
                     // ── Create Button ──
                     Button {
@@ -232,6 +246,10 @@ struct CreateHabitView: View {
                             targetValue: type == .numeric ? Double(targetValue) : nil,
                             unit: type == .numeric ? unit : nil
                         )
+                        if TutorialCoordinator.shared.isActive,
+                           TutorialCoordinator.shared.currentStep == .createButton {
+                            TutorialCoordinator.shared.complete()
+                        }
                         dismiss()
                     } label: {
                         Text("CREATE HABIT")
@@ -247,16 +265,47 @@ struct CreateHabitView: View {
                     }
                     .disabled(!canSave)
                     .buttonStyle(.plain)
+                    .tutorialAnchor(.createButton)
+                    .id(TutorialCoordinator.Step.createButton)
 
                     Spacer().frame(height: 40)
                 }
                 .padding(.horizontal, 16)
             }
+            .onChange(of: TutorialCoordinator.shared.currentStep) { _, step in
+                guard TutorialCoordinator.shared.isActive else { return }
+                // Target section only exists when type is numeric — skip past it otherwise.
+                if step == .numericTarget && type != .numeric {
+                    TutorialCoordinator.shared.advance()
+                    return
+                }
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    scrollProxy.scrollTo(step, anchor: .center)
+                }
+            }
+            .onChange(of: type) { _, newType in
+                // If the user switches away from numeric while parked on the Target step,
+                // the Target section disappears — skip ahead.
+                if TutorialCoordinator.shared.isActive,
+                   TutorialCoordinator.shared.currentStep == .numericTarget,
+                   newType != .numeric {
+                    TutorialCoordinator.shared.advance()
+                }
+            }
+            }
         }
         .sheet(isPresented: $showIconPicker) {
             IconPickerView(selectedIcon: $icon)
         }
-        .onAppear { Analytics.screen("CreateHabit") }
+        .tutorialOverlay()
+        .onAppear {
+            Analytics.screen("CreateHabit")
+            // If the tutorial is still on the home-screen step (user tapped + mid-tour), advance it.
+            if TutorialCoordinator.shared.isActive,
+               TutorialCoordinator.shared.currentStep < .habitName {
+                TutorialCoordinator.shared.jump(to: .habitName)
+            }
+        }
     }
 
     // MARK: - Section Card
