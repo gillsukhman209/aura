@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1AB4BFFF2F775CF3008674A7 /* SuperwallKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1AB4BFFE2F775CF3008674A7 /* SuperwallKit */; };
 		1ADD1B982F7862D700715FAB /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = 1ADD1B972F7862D700715FAB /* PostHog */; };
+		1AE17D6B2F994C9100524F64 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1AE17D6A2F994C9100524F64 /* FirebaseAuth */; };
+		1AE17D6D2F994CA000524F64 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1AE17D6C2F994CA000524F64 /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1AB4BFFF2F775CF3008674A7 /* SuperwallKit in Frameworks */,
+				1AE17D6D2F994CA000524F64 /* FirebaseFirestore in Frameworks */,
+				1AE17D6B2F994C9100524F64 /* FirebaseAuth in Frameworks */,
 				1ADD1B982F7862D700715FAB /* PostHog in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -40,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				1A95003B2F60EC3D000CF182 /* aura */,
+				1AE17D692F994C9100524F64 /* Frameworks */,
 				1A95003A2F60EC3D000CF182 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -50,6 +55,13 @@
 				1A9500392F60EC3D000CF182 /* aura.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1AE17D692F994C9100524F64 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -74,6 +86,8 @@
 			packageProductDependencies = (
 				1AB4BFFE2F775CF3008674A7 /* SuperwallKit */,
 				1ADD1B972F7862D700715FAB /* PostHog */,
+				1AE17D6A2F994C9100524F64 /* FirebaseAuth */,
+				1AE17D6C2F994CA000524F64 /* FirebaseFirestore */,
 			);
 			productName = aura;
 			productReference = 1A9500392F60EC3D000CF182 /* aura.app */;
@@ -106,6 +120,7 @@
 			packageReferences = (
 				1AB4BFFD2F775CF3008674A7 /* XCRemoteSwiftPackageReference "Superwall-iOS" */,
 				1ADD1B962F7862D700715FAB /* XCRemoteSwiftPackageReference "posthog-ios" */,
+				1AE17D682F994BC000524F64 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1A95003A2F60EC3D000CF182 /* Products */;
@@ -283,7 +298,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gill.aura;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -318,7 +333,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.gill.aura;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -371,6 +386,14 @@
 				minimumVersion = 3.48.2;
 			};
 		};
+		1AE17D682F994BC000524F64 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -383,6 +406,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1ADD1B962F7862D700715FAB /* XCRemoteSwiftPackageReference "posthog-ios" */;
 			productName = PostHog;
+		};
+		1AE17D6A2F994C9100524F64 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1AE17D682F994BC000524F64 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		1AE17D6C2F994CA000524F64 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1AE17D682F994BC000524F64 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

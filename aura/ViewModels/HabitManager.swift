@@ -301,6 +301,14 @@ final class HabitManager {
             // Reverse XP
             profile?.addXP(-habit.baseXP)
             profile?.addStatXP(-habit.statXP, to: habit.stat)
+            RemoteProfileService.shared.applyDelta(
+                xpDelta: -habit.baseXP,
+                stat: habit.stat,
+                statDelta: -habit.statXP,
+                currentStreak: profile?.currentStreak,
+                longestStreak: profile?.longestStreak,
+                lastCompletedDate: profile?.lastCompletedDate
+            )
         }
 
         habit.logs.removeAll { $0.id == log.id }
@@ -353,6 +361,14 @@ final class HabitManager {
         profile?.addXP(habit.baseXP)
         profile?.addStatXP(habit.statXP, to: habit.stat)
         syncProfileState()
+        RemoteProfileService.shared.applyDelta(
+            xpDelta: habit.baseXP,
+            stat: habit.stat,
+            statDelta: habit.statXP,
+            currentStreak: profile?.currentStreak,
+            longestStreak: profile?.longestStreak,
+            lastCompletedDate: profile?.lastCompletedDate
+        )
         checkDailyCompletionBonus()
 
         // Check for level-up
@@ -379,6 +395,14 @@ final class HabitManager {
         profile?.addXP(40)
         lastBonusDate = appNow()
         syncProfileState()
+        RemoteProfileService.shared.applyDelta(
+            xpDelta: 40,
+            stat: nil,
+            statDelta: 0,
+            currentStreak: profile?.currentStreak,
+            longestStreak: profile?.longestStreak,
+            lastCompletedDate: profile?.lastCompletedDate
+        )
         save()
 
         // All done — cancel evening and streak-death roasts
@@ -412,6 +436,14 @@ final class HabitManager {
         if xpAfter < xpBefore {
             auraLostAmount = xpBefore - xpAfter
             showAuraLost = true
+            RemoteProfileService.shared.applyDelta(
+                xpDelta: -(xpBefore - xpAfter),
+                stat: nil,
+                statDelta: 0,
+                currentStreak: profile.currentStreak,
+                longestStreak: profile.longestStreak,
+                lastCompletedDate: profile.lastCompletedDate
+            )
 
             // Schedule post-penalty roast notification
             let intensity = RoastIntensity(rawValue: UserDefaults.standard.string(forKey: "roastIntensity") ?? "brutal") ?? .brutal
@@ -444,27 +476,35 @@ final class HabitManager {
     // MARK: - Mock Data
 
     func seedMockData() {
+        // Preserve Firebase identity if already claimed so the Friends tab keeps working.
+        let existingProfiles = (try? modelContext.fetch(FetchDescriptor<UserProfile>())) ?? []
+        let preservedUsername = existingProfiles.first?.username
+        let preservedRemoteUID = existingProfiles.first?.remoteUID
+
         // Clear existing data
         let existingHabits = (try? modelContext.fetch(FetchDescriptor<Habit>())) ?? []
         for h in existingHabits { modelContext.delete(h) }
         let existingLogs = (try? modelContext.fetch(FetchDescriptor<HabitLog>())) ?? []
         for l in existingLogs { modelContext.delete(l) }
-        let existingProfiles = (try? modelContext.fetch(FetchDescriptor<UserProfile>())) ?? []
         for p in existingProfiles { modelContext.delete(p) }
         save()
 
-        // Create profile
+        // Create profile with some realistic randomness so re-tapping the debug button feels different.
         let newProfile = UserProfile()
-        newProfile.totalXP = 4200
-        newProfile.currentStreak = 12
-        newProfile.longestStreak = 18
+        newProfile.username = preservedUsername
+        newProfile.remoteUID = preservedRemoteUID
+        // Pick a high-tier range so screenshots land in Platinum → Diamond.
+        // Thresholds: Platinum I ≈ 40,700 cum XP, Diamond I ≈ 92,700, Diamond V ≈ 205,700.
+        newProfile.totalXP = Int.random(in: 55_000...150_000)
+        newProfile.currentStreak = Int.random(in: 22...48)
+        newProfile.longestStreak = max(newProfile.currentStreak, Int.random(in: 40...75))
         newProfile.lastCompletedDate = Calendar.current.date(byAdding: .day, value: -1, to: appNow())
         var statsDict: [String: Int] = [:]
-        statsDict[StatType.strength.rawValue] = 68
-        statsDict[StatType.focus.rawValue] = 52
-        statsDict[StatType.discipline.rawValue] = 74
-        statsDict[StatType.knowledge.rawValue] = 45
-        statsDict[StatType.energy.rawValue] = 56
+        statsDict[StatType.strength.rawValue]   = Int.random(in: 180...320)
+        statsDict[StatType.focus.rawValue]      = Int.random(in: 180...320)
+        statsDict[StatType.discipline.rawValue] = Int.random(in: 180...320)
+        statsDict[StatType.knowledge.rawValue]  = Int.random(in: 180...320)
+        statsDict[StatType.energy.rawValue]     = Int.random(in: 180...320)
         newProfile.stats = statsDict
         modelContext.insert(newProfile)
 
@@ -558,6 +598,9 @@ final class HabitManager {
         profile = newProfile
         fetchHabits()
         syncProfileState()
+
+        // Mirror the seeded profile to Firestore so the Friends tab / leaderboard reflect it.
+        RemoteProfileService.shared.pushFullProfile(from: newProfile)
     }
 
     // MARK: - Persistence

@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Any signed-in user can read other user profiles (rank/points/streak go on the leaderboard).
+    // Only the owner can write their own doc.
+    match /users/{uid} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if false;
+
+      // Friends subcollection — mirrored both ways.
+      // Either party can create/delete their own row (used by accept + remove flows).
+      match /friends/{friendUid} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow create, delete: if request.auth != null
+          && (request.auth.uid == uid || request.auth.uid == friendUid);
+      }
+    }
+
+    // Username uniqueness lock. Signed-in users can read (for collision checks via search);
+    // create is only allowed if the lock is unclaimed and the creator owns it.
+    match /usernames/{lower} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Friend requests — sender can create; either side can read/delete the pending row.
+    match /friendRequests/{rid} {
+      allow read: if request.auth != null
+        && (request.auth.uid == resource.data.fromUid
+            || request.auth.uid == resource.data.toUid);
+      allow create: if request.auth != null
+        && request.resource.data.fromUid == request.auth.uid
+        && request.resource.data.status == "pending";
+      allow delete: if request.auth != null
+        && (request.auth.uid == resource.data.fromUid
+            || request.auth.uid == resource.data.toUid);
+      allow update: if false;
+    }
+  }
+}

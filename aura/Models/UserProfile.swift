@@ -7,6 +7,12 @@ final class UserProfile {
 
     @Attribute(.unique) var id: UUID
 
+    /// Firebase Anonymous Auth UID, once claimed.
+    var remoteUID: String?
+
+    /// Chosen username, once claimed (mirrors Firestore `users/{uid}.username`).
+    var username: String?
+
     // MARK: - XP & Leveling
 
     var totalXP: Int
@@ -52,6 +58,8 @@ final class UserProfile {
 
     init() {
         self.id = UUID()
+        self.remoteUID = nil
+        self.username = nil
         self.totalXP = 0
         self.currentStreak = 0
         self.longestStreak = 0

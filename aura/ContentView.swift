@@ -4,6 +4,7 @@ import SuperwallKit
 struct ContentView: View {
     @Environment(HabitManager.self) private var manager
     @Environment(\.scenePhase) private var scenePhase
+    private var auth = AuthService.shared
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
     @AppStorage("morningRoastHour") private var morningHour = 9
@@ -17,6 +18,12 @@ struct ContentView: View {
 
     private var subscription = SubscriptionManager.shared
 
+    /// Main UI is gated until the user claims a username (anonymous auth is fine,
+    /// but we need a handle to enable the friends system).
+    private var needsUsername: Bool {
+        auth.isReady && auth.currentUsername == nil
+    }
+
     var body: some View {
         Group {
             if !hasCompletedOnboarding {
@@ -27,9 +34,21 @@ struct ContentView: View {
                     showPaywallGate()
                 }
                 .transition(.opacity)
+            } else if !auth.isReady {
+                ZStack {
+                    AppTheme.bgPure.ignoresSafeArea()
+                    ProgressView().tint(.white)
+                }
+                .transition(.opacity)
+            } else if needsUsername {
+                UsernameSetupView {
+                    startFriendsServices()
+                }
+                .transition(.opacity)
             } else if subscription.isPaidUser {
                 MainTabView()
                     .transition(.opacity)
+                    .onAppear { startFriendsServices() }
             } else {
                 // Not paid — show locked screen
                 LockedView {
@@ -74,7 +93,16 @@ struct ContentView: View {
     }
 
     private func showPaywallGate() {
+        #if DEBUG
+        return
+        #else
         Superwall.shared.register(placement: "aura_main")
+        #endif
+    }
+
+    private func startFriendsServices() {
+        guard let uid = auth.currentUID else { return }
+        FriendService.shared.start(forUID: uid)
     }
 
     private func rescheduleNotifications() {

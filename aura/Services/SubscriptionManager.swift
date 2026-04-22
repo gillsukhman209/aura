@@ -7,13 +7,26 @@ class SubscriptionManager: SuperwallDelegate {
     var isPaidUser: Bool = false
     var paywallDidDismissWithoutPurchase: Bool = false
 
+    /// Debug builds always unlock the app so we can iterate without hitting the paywall.
+    static let debugUnlock: Bool = {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
+    }()
+
     private init() {
-        isPaidUser = Superwall.shared.subscriptionStatus.isActive
+        isPaidUser = Self.debugUnlock || Superwall.shared.subscriptionStatus.isActive
     }
 
     // MARK: - SuperwallDelegate
 
     func subscriptionStatusDidChange(from oldValue: SubscriptionStatus, to newValue: SubscriptionStatus) {
+        if Self.debugUnlock {
+            isPaidUser = true
+            return
+        }
         switch newValue {
         case .active:
             isPaidUser = true
@@ -23,7 +36,7 @@ class SubscriptionManager: SuperwallDelegate {
     }
 
     func handleSuperwallEvent(withInfo eventInfo: SuperwallEventInfo) {
-        if case .paywallClose(let paywallInfo) = eventInfo.event {
+        if case .paywallClose = eventInfo.event {
             if !Superwall.shared.subscriptionStatus.isActive {
                 paywallDidDismissWithoutPurchase = true
             }

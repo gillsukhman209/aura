@@ -8,6 +8,7 @@ struct MainTabView: View {
         ("house.fill", "Home"),
         ("chart.bar.fill", "Stats"),
         ("diamond.fill", "Rank"),
+        ("person.2.fill", "Friends"),
     ]
 
     var body: some View {
@@ -18,6 +19,7 @@ struct MainTabView: View {
                 case 0: CharacterView()
                 case 1: StatsView()
                 case 2: RankView()
+                case 3: FriendsTabView()
                 default: CharacterView()
                 }
             }

@@ -9,6 +9,10 @@ struct auraApp: App {
     let habitManager: HabitManager
 
     init() {
+        // Configure Firebase first — AuthService.bootstrap() depends on it.
+        FirebaseService.shared.configure()
+        AuthService.shared.bootstrap()
+
         do {
             let schema = Schema([
                 Habit.self,
