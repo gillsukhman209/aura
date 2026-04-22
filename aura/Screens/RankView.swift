@@ -226,7 +226,7 @@ struct RankView: View {
                     } label: { ... }
 */
 
-                    #if DEBUG
+                    #if false  // DEBUG buttons — flip to `#if DEBUG` to re-enable (seed / +5k AP / replay tutorial)
                     Button {
                         manager.seedMockData()
                         let info = manager.levelInfo
